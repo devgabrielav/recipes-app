@@ -43,4 +43,20 @@ describe('Testa tela de login', () => {
 
     expect(buttonEnter).not.toBeDisabled();
   });
+
+  it('Testa se email é salvo no localStorage', async () => {
+    const { user } = renderWithRouter(<Login />);
+
+    const inputEmail = screen.getByTestId(emailTestId);
+    const inputPassword = screen.getByTestId(passwordTestId);
+    const buttonEnter = screen.getByTestId(buttonTestId);
+
+    await user.type(inputEmail, testEmail);
+    await user.type(inputPassword, testPassword);
+    await user.click(buttonEnter);
+
+    const emailLocal = { email: testEmail };
+
+    expect(JSON.parse(localStorage.getItem('user') || '{}')).toEqual(emailLocal);
+  });
 });

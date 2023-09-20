@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import validator from 'validator';
+import { useNavigate } from 'react-router-dom';
 import LoginContext, { LoginType } from '../context/LoginContext';
 
 function Login() {
@@ -8,6 +9,7 @@ function Login() {
     email: '',
     password: '',
   });
+  const navigate = useNavigate();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -24,8 +26,10 @@ function Login() {
     }
   };
 
-  const saveEmail = () => localStorage.setItem('user', JSON
-    .stringify({ email: valueInputs.email }));
+  const saveEmail = () => {
+    localStorage.setItem('user', JSON.stringify({ email: valueInputs.email }));
+    navigate('/meals');
+  };
 
   return (
     <LoginContext.Provider value={ valueInputs }>
