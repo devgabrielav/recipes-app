@@ -1,7 +1,9 @@
 import { ChangeEvent, useState } from 'react';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
+import { Button, Input, Img, Container, Heading } from '@chakra-ui/react';
 import LoginContext, { LoginType } from '../context/LoginContext';
+import login from '../images/login.png';
 
 function Login() {
   const [isDisabled, setIsDisabled] = useState(true);
@@ -33,28 +35,83 @@ function Login() {
 
   return (
     <LoginContext.Provider value={ valueInputs }>
-      <div>
-        <h2>Login</h2>
-        <input
+      <Container
+        maxW="360px"
+        maxH="640px"
+        textAlign="center"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
+        <Img
+          src={ login }
+          alt="login"
+          className="image"
+          position="absolute"
+          zIndex="-1"
+        />
+        <Heading
+          position="relative"
+          top="500px"
+          fontFamily="Epilogue"
+          fontWeight="500"
+          width="182px"
+          height="21px"
+          marginTop="7px"
+          marginBottom="25px"
+          fontSize="30px"
+          fontStyle="italic"
+          color="#41197F"
+        >
+          LOGIN
+        </Heading>
+        <Input
           type="email"
           data-testid="email-input"
           name="email"
           onChange={ handleChange }
+          className="inputsClass"
+          placeholder="Email"
+          width="276px"
+          colorScheme="purple"
+          border="0.5px solid #41197F"
+          _placeholder={ { color: '#41197F' } }
+          fontFamily="epilogue"
+          position="relative"
+          top="510px"
+          marginBottom="5px"
+          color="#41197F"
         />
-        <input
+        <Input
           type="password"
           data-testid="password-input"
           name="password"
           onChange={ handleChange }
+          className="inputsClass"
+          placeholder="Password"
+          width="276px"
+          colorScheme="purple"
+          border="0.5px solid #41197F"
+          _placeholder={ { color: '#41197F' } }
+          fontFamily="epilogue"
+          position="relative"
+          top="510px"
+          color="#41197F"
         />
-        <button
+        <Button
+          isDisabled={ isDisabled }
           data-testid="login-submit-btn"
-          disabled={ isDisabled }
           onClick={ saveEmail }
+          colorScheme="yellow"
+          position="relative"
+          top="530px"
+          width="276px"
+          color="white"
+          fontFamily="epilogue"
         >
-          Enter
-        </button>
-      </div>
+          ENTER
+        </Button>
+      </Container>
     </LoginContext.Provider>
   );
 }
