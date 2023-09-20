@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useContext } from 'react';
+import { ChangeEvent, useState } from 'react';
 import validator from 'validator';
 import LoginContext, { LoginType } from '../context/LoginContext';
 
@@ -24,6 +24,9 @@ function Login() {
     }
   };
 
+  const saveEmail = () => localStorage.setItem('user', JSON
+    .stringify({ email: valueInputs.email }));
+
   return (
     <LoginContext.Provider value={ valueInputs }>
       <div>
@@ -40,7 +43,11 @@ function Login() {
           name="password"
           onChange={ handleChange }
         />
-        <button data-testid="login-submit-btn" disabled={ isDisabled }>
+        <button
+          data-testid="login-submit-btn"
+          disabled={ isDisabled }
+          onClick={ saveEmail }
+        >
           Enter
         </button>
       </div>
