@@ -1,21 +1,46 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { FormEvent, useContext, useState, ChangeEvent } from 'react';
 import { Input, Box,
   Heading, RadioGroup, Radio, Container, Button, Flex, Center } from '@chakra-ui/react';
 import profileIcon from '../../images/profileIcon.svg';
 import searchIcon from '../../images/searchIcon.svg';
 import recipesAppIcon from '../../images/recipesAppIcon.svg';
 import recipesAppTitle from '../../images/recipesAppTitle.svg';
+import { layoutContext } from '../../context/layout/layoutContext';
 
 type HeaderPropsType = {
   title: string | undefined
+  searchButton?: boolean
 };
 
-export default function Header({ title }: HeaderPropsType) {
+export default function Header({ title, searchButton = true }: HeaderPropsType) {
   const navigate = useNavigate();
-  const [search, setSearch] = useState(false);
   const [radioGroup, setRadioGroup] = useState('ingredient');
-  const toggleSearch = () => setSearch(!search);
+  const [search, setSearch] = useState({
+    isVisible: false,
+    searchValue: '',
+  });
+  const toggleSearch = () => setSearch((prev) => ({
+    ...prev, isVisible: !prev.isVisible,
+  }));
+  const setLayout = useContext(layoutContext)[1];
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setSearch((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    setLayout((prev) => ({
+      ...prev,
+      searchType: radioGroup,
+      searchValue: search.searchValue,
+    }));
+  };
 
   if (title) {
     return (
@@ -23,25 +48,33 @@ export default function Header({ title }: HeaderPropsType) {
         <Flex bg="#FCDC36" paddingInline={ 4 } justifyContent="space-between">
 
           <Flex>
-            <img src={ recipesAppIcon } alt="Recipes app Icon" />
+            <img
+              src={ recipesAppIcon }
+              alt="Recipes app Icon"
+            />
             <img src={ recipesAppTitle } alt="Recipes app Title" />
           </Flex>
 
           <Flex gap={ 4 }>
-            <Box
-              as="button"
-              data-testid="search-top-btn"
-              onClick={ toggleSearch }
-            >
-              <img src={ searchIcon } alt="Search Icon" />
-            </Box>
+            {searchButton
+            && (
+              <Box
+                as="button"
+                onClick={ toggleSearch }
+              >
+                <img src={ searchIcon } alt="Search Icon" data-testid="search-top-btn" />
+              </Box>
+            )}
 
             <Box
               as="button"
               onClick={ () => navigate('/profile') }
-              data-testid="profile-top-btn"
             >
-              <img src={ profileIcon } alt="Profile Icon" />
+              <img
+                data-testid="profile-top-btn"
+                src={ profileIcon }
+                alt="Profile Icon"
+              />
             </Box>
           </Flex>
         </Flex>
@@ -50,11 +83,11 @@ export default function Header({ title }: HeaderPropsType) {
             data-testid="page-title"
             color="#41197F"
           >
-            {title.toLocaleUpperCase()}
+            {title}
           </Heading>
         </Center>
 
-        {search && (
+        {search.isVisible && (
           <Container
             bg="#41197F"
             color="white"
@@ -63,16 +96,20 @@ export default function Header({ title }: HeaderPropsType) {
             padding={ 0 }
             borderRadius={ 6 }
           >
-            <Input
-              data-testid="search-input"
-              placeholder="Search"
-              type="text"
-              bg="white"
-              width={ 338 }
-              marginBottom={ 4 }
-              name="search"
-            />
-            <form onSubmit={ (e) => e.preventDefault() }>
+            <form
+              onSubmit={ handleSubmit }
+            >
+              <Input
+                data-testid="search-input"
+                placeholder="Search"
+                type="text"
+                bg="white"
+                width={ 338 }
+                marginBottom={ 4 }
+                name="searchValue"
+                color="black"
+                onChange={ handleChange }
+              />
 
               <Flex
                 justify="center"
@@ -104,7 +141,7 @@ export default function Header({ title }: HeaderPropsType) {
                   <Radio
                     data-testid="first-letter-search-radio"
                     colorScheme="yellow"
-                    value="firtLetter"
+                    value="firstLetter"
                   >
                     First letter
                   </Radio>
@@ -115,6 +152,7 @@ export default function Header({ title }: HeaderPropsType) {
                   w={ 300 }
                   color="white"
                   data-testid="exec-search-btn"
+                  type="submit"
                 >
                   SEARCH
                 </Button>
