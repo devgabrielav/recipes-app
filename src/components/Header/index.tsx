@@ -10,10 +10,10 @@ import { layoutContext } from '../../context/layout/layoutContext';
 
 type HeaderPropsType = {
   title: string | undefined
-  searchButton?: boolean
+  disableSearch?: boolean
 };
 
-export default function Header({ title, searchButton = true }: HeaderPropsType) {
+export default function Header({ title, disableSearch = false }: HeaderPropsType) {
   const navigate = useNavigate();
   const [radioGroup, setRadioGroup] = useState('ingredient');
   const [search, setSearch] = useState({
@@ -56,7 +56,7 @@ export default function Header({ title, searchButton = true }: HeaderPropsType) 
           </Flex>
 
           <Flex gap={ 4 }>
-            {searchButton
+            {!disableSearch
             && (
               <Box
                 as="button"

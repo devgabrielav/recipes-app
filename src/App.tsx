@@ -14,6 +14,20 @@ function App() {
       <Routes>
         <Route path="/" element={ <Login /> } />
         <Route path="/meals" element={ <Header title="Meals" /> } />
+        <Route path="/drinks" element={ <Header title="Drinks" /> } />
+        <Route
+          path="/favorite-recipes"
+          element={ <Header title="Favorite Recipes" disableSearch /> }
+        />
+
+        <Route
+          path="/profile"
+          element={ <Header title="Profile" disableSearch /> }
+        />
+        <Route
+          path="/done-recipes"
+          element={ <Header title="Done Recipes" disableSearch /> }
+        />
       </Routes>
     </layoutContext.Provider>
 
