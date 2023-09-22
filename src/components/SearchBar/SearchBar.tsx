@@ -1,14 +1,31 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
 import { Input, Radio, Button, Flex, RadioGroup, Box } from '@chakra-ui/react';
-import useExecuteSearch from '../../hooks/useExecuteSearch';
+import { useLocation } from 'react-router-dom';
+import { layoutContext } from '../../context/layout/layoutContext';
+import { searchCocktailsAPI, searchMealsAPI } from '../../helper/helpersAPI';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
-  const executeSearch = useExecuteSearch();
+  const { pathname } = useLocation();
+  const setLayout = useContext(layoutContext)[1];
+
+  const executeSearch = async () => {
+    if (searchOption === 'first-letter' && searchInput.length > 1) {
+      window.alert('Your search must have only 1 (one) character');
+      return;
+    }
+    if (pathname === '/meals') {
+      const data = await searchMealsAPI(searchOption, searchInput);
+      setLayout((prev) => ({ ...prev, searchResults: (data.meals || []) }));
+    } else if (pathname === '/drinks') {
+      const data = await searchCocktailsAPI(searchOption, searchInput);
+      setLayout((prev) => ({ ...prev, searchResults: (data.drinks || []) }));
+    }
+  };
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    executeSearch(searchOption, searchInput);
+    executeSearch();
   };
 
   return (
