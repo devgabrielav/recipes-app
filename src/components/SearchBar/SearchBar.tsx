@@ -32,7 +32,8 @@ export default function SearchBar() {
       maxW="360px"
       padding={ 0 }
     >
-      <Box
+      <form
+        onSubmit={ executeSearch }
         bg="#41197F"
         color="white"
         height={ 148 }
@@ -40,7 +41,6 @@ export default function SearchBar() {
         borderRadius={ 6 }
         marginBottom={ 4 }
       >
-        <form onSubmit={ executeSearch }>
           <Input
             data-testid="search-input"
             placeholder="Search"
@@ -98,8 +98,7 @@ export default function SearchBar() {
               SEARCH
             </Button>
           </Flex>
-        </form>
-      </Box>
+      </form>
 
       <SimpleGrid columns={ 2 } spacing={ 10 }>
         {searchResults.map((obj) => (
