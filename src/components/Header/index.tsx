@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { FormEvent, useContext, useState, ChangeEvent } from 'react';
-import { Input, Box, Heading, RadioGroup, Radio, Container, Button, Flex, Center,
-  Link as ChakraLink } from '@chakra-ui/react';
+import { Box, Link as ChakraLink,
+  Heading, Flex, Center } from '@chakra-ui/react';
+import { useState } from 'react';
 import profileIcon from '../../images/profileIcon.svg';
 import searchIcon from '../../images/searchIcon.svg';
 import recipesAppIcon from '../../images/recipesAppIcon.svg';
 import recipesAppTitle from '../../images/recipesAppTitle.svg';
-import { layoutContext } from '../../context/layout/layoutContext';
+import SearchBar from '../SearchBar/SearchBar';
 
 type HeaderPropsType = {
   title: string | undefined
@@ -14,32 +14,12 @@ type HeaderPropsType = {
 };
 
 export default function Header({ title, disableSearch = false }: HeaderPropsType) {
-  const [radioGroup, setRadioGroup] = useState('ingredient');
   const [search, setSearch] = useState({
     isVisible: false,
-    searchValue: '',
   });
   const toggleSearch = () => setSearch((prev) => ({
     ...prev, isVisible: !prev.isVisible,
   }));
-  const setLayout = useContext(layoutContext)[1];
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setSearch((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    setLayout((prev) => ({
-      ...prev,
-      searchType: radioGroup,
-      searchValue: search.searchValue,
-    }));
-  };
 
   if (title) {
     return (
@@ -83,78 +63,7 @@ export default function Header({ title, disableSearch = false }: HeaderPropsType
         </Center>
 
         {search.isVisible && (
-          <Container
-            bg="#41197F"
-            color="white"
-            width={ 338 }
-            height={ 148 }
-            padding={ 0 }
-            borderRadius={ 6 }
-          >
-            <form
-              onSubmit={ handleSubmit }
-            >
-              <Input
-                data-testid="search-input"
-                placeholder="Search"
-                type="text"
-                bg="white"
-                width={ 338 }
-                marginBottom={ 4 }
-                name="searchValue"
-                color="black"
-                onChange={ handleChange }
-              />
-
-              <Flex
-                justify="center"
-                align="center"
-                direction="column"
-              >
-                <RadioGroup
-                  gap={ 2 }
-                  onChange={ setRadioGroup }
-                  value={ radioGroup }
-                  name="search-type"
-                >
-                  <Radio
-                    colorScheme="yellow"
-                    value="ingredient"
-                    data-testid="ingredient-search-radio"
-                    marginEnd={ 4 }
-                  >
-                    Ingredient
-                  </Radio>
-                  <Radio
-                    colorScheme="yellow"
-                    value="name"
-                    marginEnd={ 4 }
-                    data-testid="name-search-radio"
-                  >
-                    Name
-                  </Radio>
-                  <Radio
-                    data-testid="first-letter-search-radio"
-                    colorScheme="yellow"
-                    value="firstLetter"
-                  >
-                    First letter
-                  </Radio>
-                </RadioGroup>
-                <Button
-                  m={ 4 }
-                  colorScheme="yellow"
-                  w={ 300 }
-                  color="white"
-                  data-testid="exec-search-btn"
-                  type="submit"
-                >
-                  SEARCH
-                </Button>
-              </Flex>
-            </form>
-          </Container>
-        )}
+          <SearchBar />)}
       </header>
     );
   }

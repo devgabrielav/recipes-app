@@ -1,9 +1,9 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Login from './components/Login';
 import Header from './components/Header';
 import LayoutProvider from './context/layout/LayoutProvider';
+import Login from './components/Login/Login';
 
 function App() {
   return (
