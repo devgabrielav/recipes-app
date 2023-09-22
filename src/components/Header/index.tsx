@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Box, Link as ChakraLink,
   Heading, Flex, Center } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -8,18 +8,28 @@ import recipesAppIcon from '../../images/recipesAppIcon.svg';
 import recipesAppTitle from '../../images/recipesAppTitle.svg';
 import SearchBar from '../SearchBar/SearchBar';
 
-type HeaderPropsType = {
-  title: string | undefined
-  disableSearch?: boolean
-};
-
-export default function Header({ title, disableSearch = false }: HeaderPropsType) {
+export default function Header() {
   const [search, setSearch] = useState({
     isVisible: false,
   });
   const toggleSearch = () => setSearch((prev) => ({
     ...prev, isVisible: !prev.isVisible,
   }));
+  const location = useLocation();
+
+  const getTitle = () => {
+    const path = location.pathname.replace('/', '');
+    const array = path.split('-');
+    const upLetter = array.map((word) => word[0].toUpperCase() + word.slice(1));
+    const title = upLetter.join(' ');
+    return title;
+  };
+  const title = getTitle();
+
+  const disableSearch = () => {
+    return location.pathname === '/favorite-recipes'
+      || location.pathname === '/done-recipes' || location.pathname === '/profile';
+  };
 
   if (title) {
     return (
@@ -35,7 +45,7 @@ export default function Header({ title, disableSearch = false }: HeaderPropsType
           </Flex>
 
           <Center gap={ 4 }>
-            {!disableSearch
+            {!disableSearch()
             && (
               <Box
                 as="button"

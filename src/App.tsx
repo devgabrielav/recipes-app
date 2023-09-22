@@ -1,30 +1,20 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Header from './components/Header';
 import LayoutProvider from './context/layout/LayoutProvider';
 import Login from './components/Login/Login';
+import Home from './pages/Home';
 
 function App() {
   return (
     <LayoutProvider>
       <Routes>
         <Route path="/" element={ <Login /> } />
-        <Route path="/meals" element={ <Header title="Meals" /> } />
-        <Route path="/drinks" element={ <Header title="Drinks" /> } />
-        <Route
-          path="/favorite-recipes"
-          element={ <Header title="Favorite Recipes" disableSearch /> }
-        />
-
-        <Route
-          path="/profile"
-          element={ <Header title="Profile" disableSearch /> }
-        />
-        <Route
-          path="/done-recipes"
-          element={ <Header title="Done Recipes" disableSearch /> }
-        />
+        <Route path="/meals" element={ <Home /> } />
+        <Route path="/drinks" element={ <Home /> } />
+        <Route path="/profile" element={ <Home /> } />
+        <Route path="/done-recipes" element={ <Home /> } />
+        <Route path="/favorite-recipes" element={ <Home /> } />
       </Routes>
     </LayoutProvider>
   );

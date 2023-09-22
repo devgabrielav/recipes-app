@@ -1,4 +1,5 @@
 export default {
-  searchValue: '',
+  searchResults: [] as any,
   searchType: 'ingredient',
+  searchValue: '',
 };

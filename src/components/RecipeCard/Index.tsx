@@ -5,7 +5,7 @@ import {
   Heading,
 } from '@chakra-ui/react';
 
-export default function RecipeCard(props) {
+export default function RecipeCard(props: any) {
   const { recipe } = props;
   return (
     <Card>
