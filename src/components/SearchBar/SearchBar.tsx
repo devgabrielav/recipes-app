@@ -31,73 +31,70 @@ export default function SearchBar() {
     <Container
       maxW="360px"
       padding={ 0 }
+      bg="#41197F"
+      color="white"
+      height={ 148 }
+      borderRadius={ 6 }
+      marginBottom={ 4 }
     >
-      <form
-        onSubmit={ executeSearch }
-        bg="#41197F"
-        color="white"
-        height={ 148 }
-        padding={ 0 }
-        borderRadius={ 6 }
-        marginBottom={ 4 }
-      >
-          <Input
-            data-testid="search-input"
-            placeholder="Search"
-            type="text"
-            bg="white"
-            marginBottom={ 4 }
-            name="searchValue"
-            color="black"
-            onChange={ (e) => setSearchInput(e.target.value) }
-          />
+      <form onSubmit={ executeSearch }>
+        <Input
+          data-testid="search-input"
+          placeholder="Search"
+          type="text"
+          bg="white"
+          marginBottom={ 4 }
+          name="searchValue"
+          color="black"
+          onChange={ (e) => setSearchInput(e.target.value) }
+        />
 
-          <Flex
-            justify="center"
-            align="center"
-            direction="column"
+        <Flex
+          justify="center"
+          align="center"
+          direction="column"
+          justifyContent="space-between"
+        >
+          <RadioGroup
+            onChange={ setSearchOption }
+            value={ searchOption }
+            name="search-type"
+            colorScheme="yellow"
+            display="flex"
             justifyContent="space-between"
+            gap={ 5 }
           >
-            <RadioGroup
-              onChange={ setSearchOption }
-              value={ searchOption }
-              name="search-type"
-              colorScheme="yellow"
-              display="flex"
-              justifyContent="space-between"
-              gap={ 5 }
+            <Radio
+              value="ingredient"
+              data-testid="ingredient-search-radio"
             >
-              <Radio
-                value="ingredient"
-                data-testid="ingredient-search-radio"
-              >
-                 Ingredient
-              </Radio>
-              <Radio
-                  value="name"
-                  data-testid="name-search-radio"
-              >
-                  Name
-              </Radio>
-              <Radio
-                value="first-letter"
-                data-testid="first-letter-search-radio"
-              >
-                First letter
-              </Radio>
-            </RadioGroup>
+              Ingredient
+            </Radio>
+            <Radio
+              value="name"
+              data-testid="name-search-radio"
+            >
+              Name
+            </Radio>
+            <Radio
+              value="first-letter"
+              data-testid="first-letter-search-radio"
+            >
+              First letter
+            </Radio>
+          </RadioGroup>
 
-            <Button
-              mt={ 4 }
-              colorScheme="yellow"
-              w={ 300 }
-              color="white"
-              data-testid="exec-search-btn"
-              type="submit"
-            >
-              SEARCH
-            </Button>
-          </Flex>
+          <Button
+            mt={ 4 }
+            colorScheme="yellow"
+            w={ 300 }
+            color="white"
+            data-testid="exec-search-btn"
+            type="submit"
+          >
+            SEARCH
+          </Button>
+        </Flex>
       </form>
 
       <SimpleGrid columns={ 2 } spacing={ 10 }>
