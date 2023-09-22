@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/dom';
 import { renderWithRouter } from '../helper/renderWithRouter';
-import Login from '../components/Login';
+import Login from '../components/Login/Login';
 
 const testEmail = 'teste@teste.com';
 const testPassword = '1234567';

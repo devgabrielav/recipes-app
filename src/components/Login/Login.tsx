@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from 'react';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input, Img, Container, Heading } from '@chakra-ui/react';
-import login from '../images/login.png';
+import login from '../../images/login.png';
 
 export default function Login() {
   const [isDisabled, setIsDisabled] = useState(true);
