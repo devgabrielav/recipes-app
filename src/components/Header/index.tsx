@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FormEvent, useContext, useState, ChangeEvent } from 'react';
 import { Input, Box,
   Heading, RadioGroup, Radio, Container, Button, Flex, Center } from '@chakra-ui/react';
@@ -14,7 +14,6 @@ type HeaderPropsType = {
 };
 
 export default function Header({ title, disableSearch = false }: HeaderPropsType) {
-  const navigate = useNavigate();
   const [radioGroup, setRadioGroup] = useState('ingredient');
   const [search, setSearch] = useState({
     isVisible: false,
@@ -66,16 +65,13 @@ export default function Header({ title, disableSearch = false }: HeaderPropsType
               </Box>
             )}
 
-            <Box
-              as="button"
-              onClick={ () => navigate('/profile') }
-            >
+            <Link to="/profile">
               <img
                 data-testid="profile-top-btn"
                 src={ profileIcon }
                 alt="Profile Icon"
               />
-            </Box>
+            </Link>
           </Flex>
         </Flex>
         <Center>
