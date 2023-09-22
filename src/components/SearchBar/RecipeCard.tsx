@@ -14,8 +14,8 @@ export default function RecipeCard(props) {
       </CardHeader>
       <CardBody>
         <img
-          src={recipe.strMealThumb || recipe.strDrinkThumb}
-          alt={recipe.strMeal || recipe.strDrink}
+          src={ recipe.strMealThumb || recipe.strDrinkThumb }
+          alt={ recipe.strMeal || recipe.strDrink }
         />
       </CardBody>
     </Card>
