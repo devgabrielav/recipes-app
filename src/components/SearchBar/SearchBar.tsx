@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react';
 import { Input, Radio, Button, Flex, Container, RadioGroup,
-SimpleGrid, Box } from '@chakra-ui/react';
+  SimpleGrid, Box } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
 import RecipeCard from './RecipeCard';
@@ -67,24 +67,24 @@ export default function SearchBar() {
               justifyContent="space-between"
               gap={ 5 }
             >
-            <Radio
-              value="ingredient"
-              data-testid="ingredient-search-radio"
-            >
-              Ingredient
-            </Radio>
-            <Radio
-                value="name"
-                data-testid="name-search-radio"
+              <Radio
+                value="ingredient"
+                data-testid="ingredient-search-radio"
               >
-                Name
-            </Radio>
-            <Radio
-              value="first-letter"
-              data-testid="first-letter-search-radio"
-            >
-              First letter
-            </Radio>
+                 Ingredient
+              </Radio>
+              <Radio
+                  value="name"
+                  data-testid="name-search-radio"
+              >
+                  Name
+              </Radio>
+              <Radio
+                value="first-letter"
+                data-testid="first-letter-search-radio"
+              >
+                First letter
+              </Radio>
             </RadioGroup>
 
             <Button
