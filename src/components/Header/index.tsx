@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FormEvent, useContext, useState, ChangeEvent } from 'react';
-import { Input, Box,
-  Heading, RadioGroup, Radio, Container, Button, Flex, Center } from '@chakra-ui/react';
+import { Input, Box, Heading, RadioGroup, Radio, Container, Button, Flex, Center,
+  Link as ChakraLink } from '@chakra-ui/react';
 import profileIcon from '../../images/profileIcon.svg';
 import searchIcon from '../../images/searchIcon.svg';
 import recipesAppIcon from '../../images/recipesAppIcon.svg';
@@ -54,7 +54,7 @@ export default function Header({ title, disableSearch = false }: HeaderPropsType
             <img src={ recipesAppTitle } alt="Recipes app Title" />
           </Flex>
 
-          <Flex gap={ 4 }>
+          <Center gap={ 4 }>
             {!disableSearch
             && (
               <Box
@@ -64,15 +64,14 @@ export default function Header({ title, disableSearch = false }: HeaderPropsType
                 <img src={ searchIcon } alt="Search Icon" data-testid="search-top-btn" />
               </Box>
             )}
-
-            <Link to="/profile">
+            <ChakraLink as={ Link } to="/profile">
               <img
                 data-testid="profile-top-btn"
                 src={ profileIcon }
                 alt="Profile Icon"
               />
-            </Link>
-          </Flex>
+            </ChakraLink>
+          </Center>
         </Flex>
         <Center>
           <Heading
