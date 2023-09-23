@@ -1,45 +1,40 @@
-import React, { FormEvent, useContext, useState } from 'react';
-import { Input, Radio, Button, Flex, RadioGroup, Box } from '@chakra-ui/react';
+import React, { FormEvent, useState } from 'react';
+import { Input, Radio, Button, Flex, Container, RadioGroup,
+  SimpleGrid, Box } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
-import { layoutContext } from '../../context/layout/layoutContext';
-import { searchCocktailsAPI, searchMealsAPI } from '../../helper/helpersAPI';
+import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
+import RecipeCard from './RecipeCard';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const { pathname } = useLocation();
-  const setLayout = useContext(layoutContext)[1];
-
-  const executeSearch = async () => {
+  const executeSearch = async (event: FormEvent) => {
+    event.preventDefault();
     if (searchOption === 'first-letter' && searchInput.length > 1) {
       window.alert('Your search must have only 1 (one) character');
       return;
     }
     if (pathname === '/meals') {
       const data = await searchMealsAPI(searchOption, searchInput);
-      setLayout((prev) => ({ ...prev, searchResults: (data.meals || []) }));
+      setSearchResults(data.meals || []);
     } else if (pathname === '/drinks') {
       const data = await searchCocktailsAPI(searchOption, searchInput);
-      setLayout((prev) => ({ ...prev, searchResults: (data.drinks || []) }));
+      setSearchResults(data.drinks || []);
     }
   };
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    executeSearch();
-  };
-
   return (
-    <Box
+    <Container
+      maxW="360px"
+      padding={ 0 }
       bg="#41197F"
       color="white"
       height={ 148 }
-      padding={ 0 }
       borderRadius={ 6 }
       marginBottom={ 4 }
     >
-      <form
-        onSubmit={ handleSubmit }
-      >
+      <form onSubmit={ executeSearch }>
         <Input
           data-testid="search-input"
           placeholder="Search"
@@ -50,7 +45,6 @@ export default function SearchBar() {
           color="black"
           onChange={ (e) => setSearchInput(e.target.value) }
         />
-
         <Flex
           justify="center"
           align="center"
@@ -98,6 +92,15 @@ export default function SearchBar() {
           </Button>
         </Flex>
       </form>
-    </Box>
+
+      <SimpleGrid columns={ 2 } spacing={ 10 }>
+        {searchResults.map((obj) => (
+          <RecipeCard
+            key={ obj.idMeal || obj.idDrink }
+            recipe={ obj }
+          />
+        ))}
+      </SimpleGrid>
+    </Container>
   );
 }
