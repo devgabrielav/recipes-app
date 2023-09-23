@@ -3,7 +3,7 @@ import { Input, Radio, Button, Flex, Container, RadioGroup,
   SimpleGrid, Box } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
-import RecipeCard from '../RecipeCard';
+import RecipeCard from '../RecipeCard/Index';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
