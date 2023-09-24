@@ -1,4 +1,5 @@
 export type LayoutType = {
-  searchValue: string;
-  searchType: string;
+  searchResults: any;
 };
+export type LayoutContextType = [
+  LayoutType, React.Dispatch<React.SetStateAction<LayoutType>>];

@@ -3,15 +3,13 @@ import { Input, Radio, Button, Flex, Container, RadioGroup,
   SimpleGrid, Box } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
-import RecipeCard from './RecipeCard';
+import RecipeCard from '../RecipeCard/Index';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-
   const { pathname } = useLocation();
-
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
     if (searchOption === 'first-letter' && searchInput.length > 1) {
@@ -26,7 +24,6 @@ export default function SearchBar() {
       setSearchResults(data.drinks || []);
     }
   };
-
   return (
     <Container
       maxW="360px"
@@ -48,7 +45,6 @@ export default function SearchBar() {
           color="black"
           onChange={ (e) => setSearchInput(e.target.value) }
         />
-
         <Flex
           justify="center"
           align="center"
