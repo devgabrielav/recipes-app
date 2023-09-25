@@ -1,16 +1,23 @@
 import React, { FormEvent, useState } from 'react';
-import { Input, Radio, Button, Flex, Container, RadioGroup,
-  SimpleGrid, Box } from '@chakra-ui/react';
-import { useLocation } from 'react-router-dom';
+import {
+  Input, Radio, Button, Flex, Container, RadioGroup,
+  SimpleGrid, Box,
+} from '@chakra-ui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
 import RecipeCard from './RecipeCard';
+import { SearchResultsType } from '../../utils/types';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-
+  const [searchResults, setSearchResults] = useState<SearchResultsType>({
+    meals: [],
+    drinks: [],
+  });
+  const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { meals, drinks } = searchResults;
 
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
@@ -24,6 +31,16 @@ export default function SearchBar() {
     } else if (pathname === '/drinks') {
       const data = await searchCocktailsAPI(searchOption, searchInput);
       setSearchResults(data.drinks || []);
+    }
+
+    if (meals.length === 0 || drinks.length === 0) {
+      window.alert("Sorry, we haven't found any recipes for these filters.");
+    } else if (meals.length === 1 || drinks.length === 1) {
+      if (pathname === '/meals') {
+        navigate(`/meals/${meals[0].id}`);
+      } else if (pathname === '/drinks') {
+        navigate(`/drinks/${drinks[0].id}`);
+      }
     }
   };
 
@@ -97,14 +114,24 @@ export default function SearchBar() {
         </Flex>
       </form>
 
-      <SimpleGrid columns={ 2 } spacing={ 10 }>
-        {searchResults.map((obj) => (
-          <RecipeCard
-            key={ obj.idMeal || obj.idDrink }
-            recipe={ obj }
-          />
-        ))}
-      </SimpleGrid>
+      {Object.keys(searchResults).length > 0 && (
+        <SimpleGrid columns={ 2 } spacing={ 10 }>
+          {searchResults.meals?.slice(0, 12).map((meal) => (
+            <RecipeCard
+              key={ meal.id }
+              recipe={ meal }
+              data-testid={ `${meal.id}-recipe-card` }
+            />
+          ))}
+          {searchResults.drinks?.slice(0, 12).map((drink) => (
+            <RecipeCard
+              key={ drink.id }
+              recipe={ drink }
+              data-testid={ `${drink.id}-recipe-card` }
+            />
+          ))}
+        </SimpleGrid>
+      )}
     </Container>
   );
 }
