@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useState, useContext } from 'react';
 import {
   Input, Radio, Button, Flex, Container, RadioGroup,
   SimpleGrid,
@@ -6,19 +6,24 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
 import RecipeCard from '../RecipeCard';
-import { SearchResultsType } from '../../utils/types';
+import { RecipeType } from '../../utils/types';
+import { layoutContext } from '../../context/layout/layoutContext';
 
 export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResultsType>({
-    meals: [],
-    drinks: [],
-  });
+  const [layout, setLayout] = useContext(layoutContext);
+  // const [searchResults, setSearchResults] = useState<SearchResultsType>({
+  //   meals: [],
+  //   drinks: [],
+  // });
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { meals, drinks } = searchResults;
-
+  const { meals, drinks } = layout.searchResults;
+  const updateSearchResults = (newValue: RecipeType[], key: 'meals' | 'drinks') => {
+    setLayout((prev) => (
+      { ...prev, searchResults: { meals: [], drinks: [], [key]: newValue } }));
+  };
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
     if (searchOption === 'first-letter' && searchInput.length > 1) {
@@ -27,10 +32,11 @@ export default function SearchBar() {
     }
     if (pathname === '/meals') {
       const data = await searchMealsAPI(searchOption, searchInput);
-      setSearchResults(data.meals || []);
+      updateSearchResults(data.meals || [], 'meals');
     } else if (pathname === '/drinks') {
       const data = await searchCocktailsAPI(searchOption, searchInput);
-      setSearchResults(data.drinks || []);
+      updateSearchResults(data.drinks || [], 'drinks');
+      console.log(data.drinks);
     }
 
     if (meals.length === 0 || drinks.length === 0) {
@@ -111,25 +117,6 @@ export default function SearchBar() {
           </Button>
         </Flex>
       </form>
-
-      {Object.keys(searchResults).length > 0 && (
-        <SimpleGrid columns={ 2 } spacing={ 10 }>
-          {searchResults.meals?.slice(0, 12).map((meal) => (
-            <RecipeCard
-              key={ meal.id }
-              recipe={ meal }
-              data-testid={ `${meal.id}-recipe-card` }
-            />
-          ))}
-          {searchResults.drinks?.slice(0, 12).map((drink) => (
-            <RecipeCard
-              key={ drink.id }
-              recipe={ drink }
-              data-testid={ `${drink.id}-recipe-card` }
-            />
-          ))}
-        </SimpleGrid>
-      )}
     </Container>
   );
 }
