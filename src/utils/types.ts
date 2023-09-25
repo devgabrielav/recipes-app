@@ -1,6 +1,5 @@
 export type LayoutType = {
-  searchValue: string;
-  searchType: string;
+  searchResults: any;
 };
 
 type RecipeType = {
@@ -13,3 +12,5 @@ export type SearchResultsType = {
   meals: RecipeType[];
   drinks: RecipeType[];
 };
+export type LayoutContextType = [
+  LayoutType, React.Dispatch<React.SetStateAction<LayoutType>>];

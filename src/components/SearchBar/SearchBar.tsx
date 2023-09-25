@@ -1,11 +1,11 @@
 import React, { FormEvent, useState } from 'react';
 import {
   Input, Radio, Button, Flex, Container, RadioGroup,
-  SimpleGrid, Box,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
-import RecipeCard from './RecipeCard';
+import RecipeCard from '../RecipeCard';
 import { SearchResultsType } from '../../utils/types';
 
 export default function SearchBar() {
@@ -43,7 +43,6 @@ export default function SearchBar() {
       }
     }
   };
-
   return (
     <Container
       maxW="360px"
@@ -65,7 +64,6 @@ export default function SearchBar() {
           color="black"
           onChange={ (e) => setSearchInput(e.target.value) }
         />
-
         <Flex
           justify="center"
           align="center"
