@@ -4,15 +4,19 @@ import {
   CardBody,
   Heading,
 } from '@chakra-ui/react';
+import { RecipeType } from '../../utils/types';
 
-export default function RecipeCard(props: any) {
-  const { recipe, index } = props;
+type RecipeCardProps = {
+  recipe: RecipeType;
+  index: number;
+} & React.ComponentProps<typeof Card>;
 
+export default function RecipeCard({ recipe, index }: RecipeCardProps) {
   return (
-    <Card>
+    <Card data-testid={ `${index}-recipe-card` }>
       <CardHeader>
         <Heading
-          data-testid={ `${index} - card-name` }
+          data-testid={ `${index}-card-name` }
           size="md"
         >
           {recipe.strMeal || recipe.strDrink }
@@ -20,7 +24,7 @@ export default function RecipeCard(props: any) {
       </CardHeader>
       <CardBody>
         <img
-          data-testid={ `${index} - card-img` }
+          data-testid={ `${index}-card-img` }
           src={ recipe.strMealThumb || recipe.strDrinkThumb }
           alt={ recipe.strMeal || recipe.strDrink }
         />

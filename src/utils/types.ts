@@ -3,9 +3,12 @@ export type LayoutType = {
 };
 
 export type RecipeType = {
-  id: string;
-  name: string;
-  imageURL: string;
+  idMeal?: string;
+  idDrink?: string;
+  strMeal?: string;
+  strDrink?: string;
+  strMealThumb?: string;
+  strDrinkThumb?: string;
 };
 
 export type SearchResultsType = {

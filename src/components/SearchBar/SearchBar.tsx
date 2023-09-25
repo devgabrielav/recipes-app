@@ -1,11 +1,9 @@
 import React, { FormEvent, useState, useContext } from 'react';
 import {
   Input, Radio, Button, Flex, Container, RadioGroup,
-  SimpleGrid,
 } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
-import RecipeCard from '../RecipeCard';
 import { RecipeType } from '../../utils/types';
 import { layoutContext } from '../../context/layout/layoutContext';
 
@@ -22,33 +20,36 @@ export default function SearchBar() {
   const { meals, drinks } = layout.searchResults;
   const updateSearchResults = (newValue: RecipeType[], key: 'meals' | 'drinks') => {
     setLayout((prev) => (
-      { ...prev, searchResults: { meals: [], drinks: [], [key]: newValue } }));
+      { ...prev, searchResults: { ...prev.searchResults, [key]: newValue } }));
   };
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
+    let data;
     if (searchOption === 'first-letter' && searchInput.length > 1) {
       window.alert('Your search must have only 1 (one) character');
       return;
     }
     if (pathname === '/meals') {
-      const data = await searchMealsAPI(searchOption, searchInput);
+      data = await searchMealsAPI(searchOption, searchInput);
       updateSearchResults(data.meals || [], 'meals');
+      if (data.meals.length === 1) {
+        return navigate(`/meals/${data.meals[0].idMeal}`);
+      }
+      if (data.meals.length === 0) {
+        window.alert("Sorry, we haven't found any recipes for these filters.");
+      }
     } else if (pathname === '/drinks') {
-      const data = await searchCocktailsAPI(searchOption, searchInput);
+      data = await searchCocktailsAPI(searchOption, searchInput);
       updateSearchResults(data.drinks || [], 'drinks');
-      console.log(data.drinks);
-    }
-
-    if (meals.length === 0 || drinks.length === 0) {
-      window.alert("Sorry, we haven't found any recipes for these filters.");
-    } else if (meals.length === 1 || drinks.length === 1) {
-      if (pathname === '/meals') {
-        navigate(`/meals/${meals[0].id}`);
-      } else if (pathname === '/drinks') {
-        navigate(`/drinks/${drinks[0].id}`);
+      if (data.drinks.length === 1) {
+        navigate(`/drinks/${data.drinks[0].idDrink}`);
+      }
+      if (data.drinks.length === 0) {
+        window.alert("Sorry, we haven't found any recipes for these filters.");
       }
     }
   };
+
   return (
     <Container
       maxW="360px"
