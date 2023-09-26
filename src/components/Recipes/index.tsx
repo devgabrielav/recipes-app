@@ -12,7 +12,7 @@ export default function Recipes() {
   return (
     <main>
       <SimpleGrid columns={ 2 } spacing={ 10 }>
-        {location.pathname === '/meals' && searchResults.meals.length > 0 && (
+        {location.pathname === '/meals' ? (
           searchResults.meals.slice(0, 12).map((meal, index) => (
             <RecipeCard
               index={ index }
@@ -21,9 +21,7 @@ export default function Recipes() {
               data-testid={ `${meal.idMeal}-recipe-card` }
             />
           ))
-        ) }
-        {location.pathname === '/drinks' && searchResults.drinks.length > 0
-        && (
+        ) : (
           searchResults.drinks.slice(0, 12).map((drink, index) => (
             <RecipeCard
               index={ index }
