@@ -17,7 +17,7 @@
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
-    "react-router-dom": "^6.10.0",
+    "react-router-dom": "^6.16.0",
     "validator": "^13.11.0"
   },
   "scripts": {
@@ -67,7 +67,7 @@
     "stylelint": "^14.16.1",
     "stylelint-order": "^5.0.0",
     "typescript": "^5.0.4",
-    "vite": "^4.1.1",
+    "vite": "^4.4.9",
     "vitest": "^0.30.1"
   }
 }

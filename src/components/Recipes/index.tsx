@@ -1,5 +1,5 @@
 import { SimpleGrid } from '@chakra-ui/react';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { layoutContext } from '../../context/layout/layoutContext';
 import RecipeCard from '../RecipeCard';
