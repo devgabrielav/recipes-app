@@ -1,4 +1,8 @@
+import { LayoutType } from '../../utils/types';
+
 export default {
-  searchValue: '',
-  searchType: 'ingredient',
-};
+  searchResults: {
+    meals: [],
+    drinks: [],
+  },
+} as LayoutType;

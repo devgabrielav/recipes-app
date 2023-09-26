@@ -16,8 +16,7 @@ async function searchMealsAPI(option: string, query: string) {
   try {
     const response = await fetch(endpoint);
     const data = await response.json();
-    console.log(data);
-    return data;
+    return data.meals;
   } catch (error) {
     console.error('Erro:', error);
     return { meals: [] };
@@ -39,7 +38,7 @@ async function searchCocktailsAPI(option: string, query: string) {
   try {
     const response = await fetch(endpoint);
     const data = await response.json();
-    return data;
+    return data.drinks;
   } catch (error) {
     console.error('Erro:', error);
     return { drinks: [] };
