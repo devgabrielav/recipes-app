@@ -1,8 +1,10 @@
+import { RecipeType } from '../utils/types';
+
 const mealAPI = 'https://www.themealdb.com/api/json/v1/1';
 const cocktailAPI = 'https://www.thecocktaildb.com/api/json/v1/1';
 
 // função para buscar comidas por ingrediente, nome ou primeira letra
-async function searchMealsAPI(option: string, query: string) {
+async function searchMealsAPI(option: string, query: string) : Promise<RecipeType[]> {
   let endpoint = '';
 
   if (option === 'ingredient') {
@@ -16,15 +18,15 @@ async function searchMealsAPI(option: string, query: string) {
   try {
     const response = await fetch(endpoint);
     const data = await response.json();
-    return data.meals;
+    return data.meals ? data.meals : [];
   } catch (error) {
     console.error('Erro:', error);
-    return { meals: [] };
+    return [];
   }
 }
 
 // função para buscar receitas de bebida por ingrediente ou nome
-async function searchCocktailsAPI(option: string, query: string) {
+async function searchCocktailsAPI(option: string, query: string) : Promise<RecipeType[]> {
   let endpoint = '';
 
   if (option === 'ingredient') {
@@ -38,10 +40,10 @@ async function searchCocktailsAPI(option: string, query: string) {
   try {
     const response = await fetch(endpoint);
     const data = await response.json();
-    return data.drinks;
+    return data.drinks ? data.drinks : [];
   } catch (error) {
     console.error('Erro:', error);
-    return { drinks: [] };
+    return [];
   }
 }
 
