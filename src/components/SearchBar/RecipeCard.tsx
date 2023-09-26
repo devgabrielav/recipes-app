@@ -2,20 +2,21 @@ import {
   Card,
   Heading,
 } from '@chakra-ui/react';
-import { MealType, DrinkType } from '../../utils/types';
+import { Link } from 'react-router-dom';
+import { RecipeType } from '../../utils/types';
 
 export type RecipeCardProps = {
-  recipes: MealType[] | DrinkType[];
+  recipes: RecipeType[];
   type: string;
 };
 
 export default function RecipeCard({ recipes, type }: RecipeCardProps) {
-  const drinksArray = recipes as DrinkType[];
-  const mealsArray = recipes as MealType[];
+  const drinksArray = recipes as RecipeType[];
+  const mealsArray = recipes as RecipeType[];
   return (
-    <div>
-      { type === 'meals' ? (mealsArray.slice(0, 12).map((recipe, index) => (
-        <Card key={ recipe.idMeal } data-testid={ `${index}-recipe-card` }>
+    type === 'meals' ? (mealsArray.slice(0, 12).map((recipe, index) => (
+      <Card key={ recipe.idMeal } data-testid={ `${index}-recipe-card` }>
+        <Link to={ `/meals/${recipe.idMeal}` }>
           <Heading size="md" data-testid={ `${index}-card-name` }>
             {recipe.strMeal}
           </Heading>
@@ -24,8 +25,10 @@ export default function RecipeCard({ recipes, type }: RecipeCardProps) {
             alt={ recipe.strMeal }
             data-testid={ `${index}-card-img` }
           />
-        </Card>))) : (drinksArray.slice(0, 12).map((recipe, index) => (
-          <Card key={ recipe.idDrink } data-testid={ `${index}-recipe-card` }>
+        </Link>
+      </Card>))) : (drinksArray.slice(0, 12).map((recipe, index) => (
+        <Card key={ recipe.idDrink } data-testid={ `${index}-recipe-card` }>
+          <Link to={ `/drinks/${recipe.idDrink}` }>
             <Heading size="md" data-testid={ `${index}-card-name` }>
               {recipe.strDrink}
             </Heading>
@@ -34,7 +37,7 @@ export default function RecipeCard({ recipes, type }: RecipeCardProps) {
               alt={ recipe.strDrink }
               data-testid={ `${index}-card-img` }
             />
-          </Card>)))}
-    </div>
+          </Link>
+        </Card>)))
   );
 }

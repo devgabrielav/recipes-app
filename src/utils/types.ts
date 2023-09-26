@@ -1,16 +1,20 @@
 export type LayoutType = {
-  searchValue: string;
-  searchType: string;
+  searchResults: SearchResultsType;
 };
 
-export type MealType = {
-  idMeal: string;
-  strMeal: string;
-  strMealThumb: string;
+export type RecipeType = {
+  idMeal?: string;
+  idDrink?: string;
+  strMeal?: string;
+  strDrink?: string;
+  strMealThumb?: string;
+  strDrinkThumb?: string;
 };
 
-export type DrinkType = {
-  idDrink: string;
-  strDrink: string;
-  strDrinkThumb: string;
+export type SearchResultsType = {
+  meals: RecipeType[];
+  drinks: RecipeType[];
 };
+
+export type LayoutContextType = [
+  LayoutType, React.Dispatch<React.SetStateAction<LayoutType>>];

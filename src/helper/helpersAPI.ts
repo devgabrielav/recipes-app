@@ -46,4 +46,47 @@ async function searchCocktailsAPI(option: string, query: string) {
   }
 }
 
-export { searchMealsAPI, searchCocktailsAPI };
+const fetchCategories = async (pathname: string) => {
+  try {
+    const endpoint = pathname === '/meals'
+      ? 'https://www.themealdb.com/api/json/v1/1/list.php?c=list'
+      : 'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list';
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return (data[pathname.replace('/', '')].slice(0, 5));
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+  }
+};
+
+const fetchByCategory = async (pathname: string, category: string) => {
+  try {
+    const endpoint = pathname === '/meals'
+      ? `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+      : `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category}`;
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return (data[pathname.replace('/', '')].slice(0, 12));
+  } catch (error) {
+    console.error('Erro ao buscar receitas:', error);
+  }
+};
+
+const fetchAllRecipes = async (pathname: string) => {
+  try {
+    const endpointAll = pathname === '/meals'
+      ? 'https://www.themealdb.com/api/json/v1/1/search.php?s='
+      : 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=';
+
+    const responseAll = await fetch(endpointAll);
+    const dataAll = await responseAll.json();
+    return (dataAll[pathname.replace('/', '')].slice(0, 12));
+  } catch (error) {
+    console.error('Erro ao buscar receitas:', error);
+  }
+};
+
+export { searchMealsAPI,
+  searchCocktailsAPI, fetchCategories, fetchByCategory, fetchAllRecipes };

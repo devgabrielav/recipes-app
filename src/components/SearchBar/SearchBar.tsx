@@ -97,14 +97,6 @@ export default function SearchBar() {
         </Flex>
       </form>
 
-      <SimpleGrid columns={ 2 } spacing={ 10 }>
-        {searchResults.map((obj) => (
-          <RecipeCard
-            key={ obj.idMeal || obj.idDrink }
-            recipe={ obj }
-          />
-        ))}
-      </SimpleGrid>
     </Container>
   );
 }

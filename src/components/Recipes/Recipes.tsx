@@ -1,33 +1,50 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import RecipeCard from '../SearchBar/RecipeCard';
-import { DrinkType, MealType } from '../../utils/types';
+import { layoutContext } from '../../context/layout/layoutContext';
 
 export type RouteType = {
   recipe: string
 };
 
-function Recipes({ recipe } : RouteType) {
-  const [meals, setMeals] = useState<MealType[]>([]);
-  const [drinks, setDrinks] = useState<DrinkType[]>([]);
+function Recipes() {
+  const [layout, setLayout] = useContext(layoutContext);
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=');
-      const data = await response.json();
-      const drinksResponse = await fetch('https://www.thecocktaildb.com/api/json/v1/1/search.php?s=');
-      const drinksData = await drinksResponse.json();
-      setMeals(data.meals);
-      setDrinks(drinksData.drinks);
+      try {
+        const endpoint = pathname === '/meals'
+          ? 'https://www.themealdb.com/api/json/v1/1/search.php?s='
+          : 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=';
+
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        setLayout({ searchResults: {
+          ...layout.searchResults,
+          [pathname.replace('/', '')]: data[`${pathname.replace('/', '')}`],
+        } });
+      } catch (error) {
+        console.error('Erro ao buscar categorias:', error);
+      }
     };
     fetchRecipes();
   }, []);
-  if (recipe === 'meals') {
+  if (pathname === '/meals') {
     return (
-      <RecipeCard recipes={ meals } type="meals" />
+      <div>
+        {layout.searchResults.meals.length > 0 && (
+          <RecipeCard recipes={ layout.searchResults.meals } type="meals" />
+        )}
+      </div>
     );
   }
   return (
-    <RecipeCard recipes={ drinks } type="drinks" />
+    <div>
+      {layout.searchResults.drinks.length > 0 && (
+        <RecipeCard recipes={ layout.searchResults.drinks } type="drinks" />
+      )}
+    </div>
   );
 }
 

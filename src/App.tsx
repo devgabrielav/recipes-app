@@ -15,8 +15,12 @@ function App() {
     <layoutContext.Provider value={ [layout, setLayout] }>
       <Routes>
         <Route path="/" element={ <Login /> } />
-        <Route path="/meals" element={ <Layout recipe="meals" /> } />
-        <Route path="/drinks" element={ <Layout recipe="drinks" /> } />
+        <Route path="/meals" element={ <Layout recipe="meals" /> }>
+          <Route index element={ <Recipes /> } />
+        </Route>
+        <Route path="/drinks" element={ <Layout recipe="drinks" /> }>
+          <Route index element={ <Recipes /> } />
+        </Route>
 
         <Route
           path="/favorite-recipes"

@@ -1,19 +1,23 @@
+import { Outlet } from 'react-router-dom';
 import Header from '../Header';
-import Recipes, { RouteType } from '../Recipes/Recipes';
+import { RouteType } from '../Recipes/Recipes';
+import RecipesCategories from '../RecipesCategories/RecipesCategories';
 
 function Layout({ recipe }: RouteType) {
   if (recipe === 'meals') {
     return (
       <div>
         <Header title="Meals" />
-        <Recipes recipe="meals" />
+        <RecipesCategories />
+        <Outlet />
       </div>
     );
   }
   return (
     <div>
       <Header title="Drinks" />
-      <Recipes recipe="drinks" />
+      <RecipesCategories />
+      <Outlet />
     </div>
   );
 }
