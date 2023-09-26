@@ -11,41 +11,43 @@ export default function SearchBar() {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
   const [layout, setLayout] = useContext(layoutContext);
-  // const [searchResults, setSearchResults] = useState<SearchResultsType>({
-  //   meals: [],
-  //   drinks: [],
-  // });
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { meals, drinks } = layout.searchResults;
-  const updateSearchResults = (newValue: RecipeType[], key: 'meals' | 'drinks') => {
-    setLayout((prev) => (
-      { ...prev, searchResults: { ...prev.searchResults, [key]: newValue } }));
+
+  const updateSearchResults = (newValue: RecipeType[], key: string) => {
+    setLayout(
+      {
+        searchResults: {
+          ...layout.searchResults,
+          [key]: newValue,
+        },
+      },
+    );
   };
+
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
-    let data;
     if (searchOption === 'first-letter' && searchInput.length > 1) {
       window.alert('Your search must have only 1 (one) character');
-      return;
     }
     if (pathname === '/meals') {
-      data = await searchMealsAPI(searchOption, searchInput);
-      updateSearchResults(data.meals || [], 'meals');
-      if (data.meals.length === 1) {
-        return navigate(`/meals/${data.meals[0].idMeal}`);
+      const dataMeals = await searchMealsAPI(searchOption, searchInput);
+      updateSearchResults(dataMeals || [], 'meals');
+      if (!dataMeals.length) {
+        return window.alert("Sorry, we haven't found any recipes for these filters.");
       }
-      if (data.meals.length === 0) {
-        window.alert("Sorry, we haven't found any recipes for these filters.");
+      if (dataMeals.length === 1) {
+        navigate(`/meals/${dataMeals[0].idMeal}`);
       }
-    } else if (pathname === '/drinks') {
-      data = await searchCocktailsAPI(searchOption, searchInput);
-      updateSearchResults(data.drinks || [], 'drinks');
-      if (data.drinks.length === 1) {
-        navigate(`/drinks/${data.drinks[0].idDrink}`);
+    }
+    if (pathname === '/drinks') {
+      const data = await searchCocktailsAPI(searchOption, searchInput);
+      updateSearchResults(data || [], 'drinks');
+      if (!data.length) {
+        return window.alert("Sorry, we haven't found any recipes for these filters.");
       }
-      if (data.drinks.length === 0) {
-        window.alert("Sorry, we haven't found any recipes for these filters.");
+      if (data.length === 1) {
+        return navigate(`/drinks/${data[0].idDrink}`);
       }
     }
   };
