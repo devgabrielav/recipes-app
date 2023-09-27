@@ -9,10 +9,10 @@ import { RecipeType } from '../../utils/types';
 type RecipeCardProps = {
   recipe: RecipeType;
   index: number;
-  baseHeadTestId: string;
+  baseHeadTestId?: string;
 } & React.ComponentProps<typeof Card>;
 
-function RecipeCard({ recipe, index, baseHeadTestId }: RecipeCardProps) {
+function RecipeCard({ recipe, index, baseHeadTestId = 'card-name' }: RecipeCardProps) {
   return (
     <Card data-testid={ `${index}-recipe-card` }>
 
