@@ -3,23 +3,25 @@ import {
   CardHeader,
   CardBody,
   Heading,
+  Link,
 } from '@chakra-ui/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link as DomLink, useLocation } from 'react-router-dom';
 import { RecipeType } from '../../utils/types';
 
 type RecipeCardProps = {
   recipe: RecipeType;
   index: number;
+  baseHeadTestId?: string;
 } & React.ComponentProps<typeof Card>;
 
-export default function RecipeCard({ recipe, index }: RecipeCardProps) {
+function RecipeCard({ recipe, index, baseHeadTestId = 'card-name' }: RecipeCardProps) {
   const { pathname } = useLocation();
   return (
     <Card data-testid={ `${index}-recipe-card` }>
-      <Link to={ `${pathname}/${recipe.idDrink || recipe.idMeal}` }>
+      <Link as={ DomLink } to={ `${pathname}/${recipe.idMeal || recipe.idDrink}` }>
         <CardHeader>
           <Heading
-            data-testid={ `${index}-card-name` }
+            data-testid={ `${index}-${baseHeadTestId}` }
             size="md"
           >
             {recipe.strMeal || recipe.strDrink }
@@ -36,3 +38,5 @@ export default function RecipeCard({ recipe, index }: RecipeCardProps) {
     </Card>
   );
 }
+
+export default RecipeCard;
