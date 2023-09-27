@@ -15,7 +15,6 @@ type RecipeCardProps = {
 function RecipeCard({ recipe, index, baseHeadTestId = 'card-name' }: RecipeCardProps) {
   return (
     <Card data-testid={ `${index}-recipe-card` }>
-
       <CardHeader>
         <Heading
           data-testid={ `${index}-${baseHeadTestId}` }
