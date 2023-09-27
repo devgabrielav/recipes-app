@@ -37,6 +37,16 @@
   font-weight: 900;
 }
 
+footer {
+  background-color: #41197f;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  position: fixed;
+  width: 100%;
+}
+
 @keyframes shake {
 
   0% {
