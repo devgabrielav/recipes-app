@@ -58,7 +58,6 @@ async function getMealById(idMeal: string) : Promise<MealsDetailsType | null> {
     return null;
   }
 }
-
 async function getDrinkById(idDrink: string): Promise<DrinksDetailsType | null> {
   const endpoint = `${cocktailAPI}/lookup.php?i=${idDrink}`;
   try {
@@ -70,7 +69,6 @@ async function getDrinkById(idDrink: string): Promise<DrinksDetailsType | null> 
     return null;
   }
 }
-
 async function getMealsRecommendations(): Promise<RecipeType[]> {
   const endpoint = `${mealAPI}/search.php?s=`;
   try {
@@ -95,5 +93,46 @@ async function getDrinksRecommendations(): Promise<RecipeType[]> {
     return [];
   }
 }
+const fetchByCategory = async (pathname: string, category: string) => {
+  try {
+    const endpoint = pathname === '/meals'
+      ? `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+      : `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category}`;
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return (data[pathname.replace('/', '')].slice(0, 12));
+  } catch (error) {
+    console.error('Erro ao buscar receitas:', error);
+  }
+};
+
+const fetchAllRecipes = async (pathname: string) => {
+  try {
+    const endpointAll = pathname === '/meals'
+      ? 'https://www.themealdb.com/api/json/v1/1/search.php?s='
+      : 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=';
+
+    const responseAll = await fetch(endpointAll);
+    const dataAll = await responseAll.json();
+    return (dataAll[pathname.replace('/', '')].slice(0, 12));
+  } catch (error) {
+    console.error('Erro ao buscar receitas:', error);
+  }
+};
+const fetchCategories = async (pathname: string) => {
+  try {
+    const endpoint = pathname === '/meals'
+      ? 'https://www.themealdb.com/api/json/v1/1/list.php?c=list'
+      : 'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list';
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return (data[pathname.replace('/', '')].slice(0, 5));
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+  }
+};
 export { searchMealsAPI, searchCocktailsAPI, getMealById, getDrinkById,
-  getMealsRecommendations, getDrinksRecommendations };
+  getMealsRecommendations, getDrinksRecommendations, fetchCategories,
+  fetchAllRecipes, fetchByCategory };
