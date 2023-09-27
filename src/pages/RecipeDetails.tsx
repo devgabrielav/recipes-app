@@ -44,7 +44,7 @@ export default function RecipeDetails() {
         <Center>
           <Heading>Ingredients</Heading>
         </Center>
-        <Card>
+        <Card padding={ 4 }>
           <UnorderedList>
             {ingredients.map((ingredient, index) => (
               <ListItem key={ ingredient }>
