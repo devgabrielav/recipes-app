@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import LayoutProvider from './context/layout/LayoutProvider';
 import Login from './components/Login/Login';
 import Home from './pages/Home';
+import RecipeDetails from './pages/RecipeDetails';
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         <Route path="/profile" element={ <Home /> } />
         <Route path="/done-recipes" element={ <Home /> } />
         <Route path="/favorite-recipes" element={ <Home /> } />
+        <Route path="/meals/:id" element={ <RecipeDetails /> } />
+        <Route path="/drinks/:id" element={ <RecipeDetails /> } />
       </Routes>
     </LayoutProvider>
   );

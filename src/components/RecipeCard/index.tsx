@@ -12,8 +12,10 @@ type RecipeCardProps = {
 } & React.ComponentProps<typeof Card>;
 
 export default function RecipeCard({ recipe, index }: RecipeCardProps) {
+  console.log(recipe.idDrink || recipe.idMeal);
   return (
     <Card data-testid={ `${index}-recipe-card` }>
+
       <CardHeader>
         <Heading
           data-testid={ `${index}-card-name` }
