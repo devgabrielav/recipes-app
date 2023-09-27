@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useContext } from 'react';
+import { FormEvent, useState, useContext } from 'react';
 import {
   Input, Radio, Button, Flex, Container, RadioGroup,
 } from '@chakra-ui/react';
