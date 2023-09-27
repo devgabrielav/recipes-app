@@ -9,16 +9,18 @@ import { RecipeType } from '../../utils/types';
 type RecipeCardProps = {
   recipe: RecipeType;
   index: number;
+  baseHeadTestId: string;
 } & React.ComponentProps<typeof Card>;
 
-export default function RecipeCard({ recipe, index }: RecipeCardProps) {
-  console.log(recipe.idDrink || recipe.idMeal);
+function RecipeCard({ recipe, index, baseHeadTestId }: RecipeCardProps) {
+  console.log(`${index}-${baseHeadTestId}`);
+
   return (
     <Card data-testid={ `${index}-recipe-card` }>
 
       <CardHeader>
         <Heading
-          data-testid={ `${index}-card-name` }
+          data-testid={ `${index}-${baseHeadTestId}` }
           size="md"
         >
           {recipe.strMeal || recipe.strDrink }
@@ -34,3 +36,5 @@ export default function RecipeCard({ recipe, index }: RecipeCardProps) {
     </Card>
   );
 }
+
+export default RecipeCard;

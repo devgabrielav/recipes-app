@@ -19,6 +19,7 @@ export default function Recipes() {
               key={ meal.idMeal }
               recipe={ meal }
               data-testid={ `${meal.idMeal}-recipe-card` }
+              baseHeadTestId="card-name"
             />
           ))
         ) }
@@ -30,6 +31,7 @@ export default function Recipes() {
               key={ drink.idDrink }
               recipe={ drink }
               data-testid={ `${drink.idDrink}-recipe-card` }
+              baseHeadTestId="card-name"
             />
           ))
         )}
