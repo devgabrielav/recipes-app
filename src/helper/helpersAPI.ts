@@ -71,4 +71,29 @@ async function getDrinkById(idDrink: string): Promise<DrinksDetailsType | null> 
   }
 }
 
-export { searchMealsAPI, searchCocktailsAPI, getMealById, getDrinkById };
+async function getMealsRecommendations(): Promise<RecipeType[]> {
+  const endpoint = `${mealAPI}/search.php?s=`;
+  try {
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    return data.meals ? data.meals.slice(0, 6) : [];
+  } catch (error) {
+    console.error('Erro:', error);
+    return [];
+  }
+}
+
+async function getDrinksRecommendations(): Promise<RecipeType[]> {
+  const endpoint = `${cocktailAPI}/search.php?s=`;
+  try {
+    const response = await fetch(endpoint);
+    const data = await response.json();
+
+    return data.drinks ? data.drinks.slice(0, 6) : [];
+  } catch (error) {
+    console.error('Erro:', error);
+    return [];
+  }
+}
+export { searchMealsAPI, searchCocktailsAPI, getMealById, getDrinkById,
+  getMealsRecommendations, getDrinksRecommendations };
