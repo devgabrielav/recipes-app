@@ -13,8 +13,6 @@ type RecipeCardProps = {
 } & React.ComponentProps<typeof Card>;
 
 function RecipeCard({ recipe, index, baseHeadTestId }: RecipeCardProps) {
-  console.log(`${index}-${baseHeadTestId}`);
-
   return (
     <Card data-testid={ `${index}-recipe-card` }>
 
