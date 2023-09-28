@@ -2,14 +2,20 @@ import { Center, Heading, Img, UnorderedList, ListItem, Card,
   Container, SimpleGrid, Button,
   Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
 import RecipeCard from '../components/RecipeCard';
+import shareIcon from '../images/shareIcon.svg';
+import heartIcon from '../images/whiteHeartIcon.svg';
 
 export default function RecipeDetails() {
   const { recipeDetails, recommendations } = useRecipesDetails();
-  const [startedRecipe, setStartedRecipe] = useState(false);
+  const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [sliceValue, setSliceValue] = useState(0);
+  const { pathname } = useLocation();
+  const [inProgressRecipe, setInProgressRecipe] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const test = setInterval(() => {
@@ -21,30 +27,85 @@ export default function RecipeDetails() {
       clearInterval(test);
     };
   }, [setSliceValue, sliceValue]);
+
+  useEffect(() => {
+    const inProgress = JSON.parse(localStorage.getItem('inProgressRecipes') || '{}');
+    const matchIdDrink = Object.keys(inProgress.drinks || '')
+      .find((drinkId) => drinkId === recipeDetails?.id);
+    const matchIdMeal = Object.keys(inProgress.meals || '')
+      .find((mealId) => mealId === recipeDetails?.id);
+    if (matchIdDrink || matchIdMeal) {
+      setInProgressRecipe(true);
+    }
+  }, [recipeDetails?.id]);
+
   if (!recipeDetails) return (<div>Loading...</div>);
 
   const { ingredients, measures } = getIngredientsAndMeasures(recipeDetails);
   const startRecipe = () => {
-    setStartedRecipe(true);
+    const inProgress = JSON.parse(localStorage
+      .getItem('inProgressRecipes') || '{}');
+    localStorage.setItem('inProgressRecipes', JSON.stringify(
+      pathname.includes('/meals') ? {
+        ...inProgress,
+        meals: {
+          ...inProgress.meals,
+          [recipeDetails.id]: ingredients.map((ingredient) => ingredient),
+        },
+      } : {
+        ...inProgress,
+        drinks: {
+          ...inProgress.drinks,
+          [recipeDetails.id]: ingredients.map((ingredient) => ingredient),
+        },
+      },
+    ));
+    setInProgressRecipe(true);
+    navigate(`${pathname}/in-progress`);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(`http://localhost:3000${pathname}`);
+    setShowCopyMessage(true);
   };
 
   return (
     <>
-      <Container>
-        <Center flexDirection="column">
+      <Container
+        maxW="360px"
+        maxH="640px"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+      >
+        <Center marginTop="20px">
           <Img
             src={ recipeDetails.img }
             alt={ recipeDetails.str }
             height={ 162 }
             data-testid="recipe-photo"
           />
+          <Button data-testid="share-btn" onClick={ copyLink }>
+            <Img src={ shareIcon } alt="share" />
+          </Button>
+          <Button data-testid="favorite-btn">
+            <Img src={ heartIcon } alt="favorite" />
+          </Button>
+          {showCopyMessage && <Text fontSize="sm">Link copied!</Text>}
+        </Center>
+        <Center flexDirection="column">
           <Heading data-testid="recipe-title">{ recipeDetails.str }</Heading>
           <Text data-testid="recipe-category">{ recipeDetails.strCategory }</Text>
         </Center>
         <Center>
           <Heading>Ingredients</Heading>
         </Center>
-        <Card padding={ 4 }>
+        <Card
+          padding={ 4 }
+          width="100%"
+          maxW="360px"
+          maxH="640px"
+        >
           <UnorderedList>
             {ingredients.map((ingredient, index) => (
               <ListItem key={ ingredient }>
@@ -73,7 +134,10 @@ export default function RecipeDetails() {
           <>
             <Heading>Video</Heading>
             <Card>
-              <Center>
+              <Center
+                maxW="360px"
+                maxH="640px"
+              >
                 <iframe
                   title="video"
                   width="352"
@@ -113,24 +177,45 @@ export default function RecipeDetails() {
           </SimpleGrid>
         </Card>
       </Container>
-
-      {!startedRecipe
-      && (
-        <Center margin={ 4 }>
-          <Button
-            data-testid="start-recipe-btn"
+      <Center margin={ 4 }>
+        <Button
+          data-testid="start-recipe-btn"
+          colorScheme="yellow"
+          color="white"
+          width="100%"
+          position="fixed"
+          bottom="0px"
+          borderRadius={ 0 }
+          onClick={ startRecipe }
+          maxW="360px"
+          maxH="640px"
+        >
+          {inProgressRecipe ? 'Continue Recipe' : 'Start Recipe'}
+        </Button>
+      </Center>
+      {/* inProgressRecipe && (
+        <button
+          data-testid="start-recipe-btn"
+          style={ { position: 'fixed', bottom: '0px', backgroundColor: 'yellow' } }
+        >
+          Continue Recipe
+        </button>
+      )}
+      {         <Center margin={ 4 }>
+          </Center>      <Button
             colorScheme="yellow"
+            data-testid="start-recipe-btn"
             color="white"
             width="100%"
             position="fixed"
             bottom="0px"
             borderRadius={ 0 }
-            onClick={ startRecipe }
+            maxW="360px"
+            maxH="640px"
           >
-            Start Recipe
-          </Button>
-        </Center>
-      )}
+            Continue Recipe
+          </Button> */}
+
     </>
   );
 }

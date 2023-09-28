@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Center } from '@chakra-ui/react';
 import { layoutContext } from '../../context/layout/layoutContext';
 import {
   fetchAllRecipes,
@@ -46,25 +47,31 @@ function RecipesCategories() {
   };
 
   return (
-    <div>
-      <div>
-        {categories.map((currCategory) => (
-          <button
-            onClick={ () => fetchRecipes(currCategory.strCategory) }
-            key={ currCategory.strCategory }
-            data-testid={ `${currCategory.strCategory}-category-filter` }
-          >
-            {currCategory.strCategory}
-          </button>
-        ))}
-      </div>
+    <Center
+      maxW="360px"
+      maxH="640px"
+      display="flex"
+      margin="auto"
+    >
       <button
         onClick={ buttonAll }
         data-testid="All-category-filter"
       >
         All
       </button>
-    </div>
+      <div>
+        {categories.map((currCategory) => (
+          <button
+            onClick={ () => fetchRecipes(currCategory.strCategory) }
+            key={ currCategory.strCategory }
+            data-testid={ `${currCategory.strCategory}-category-filter` }
+            style={ { marginLeft: '5px', marginRight: '5px' } }
+          >
+            {currCategory.strCategory}
+          </button>
+        ))}
+      </div>
+    </Center>
   );
 }
 
