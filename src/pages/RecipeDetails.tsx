@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
+import { saveToFavorites, saveToStartRecipe } from '../helper/helpersFunctions';
 import RecipeCard from '../components/RecipeCard';
 import shareIcon from '../images/shareIcon.svg';
-import heartIcon from '../images/whiteHeartIcon.svg';
+import emptyHeartIcon from '../images/whiteHeartIcon.svg';
+import fullHeartIcon from '../images/blackHeartIcon.svg';
+import { FavoriteRecipeType } from '../utils/types';
 
 export default function RecipeDetails() {
   const { recipeDetails, recommendations } = useRecipesDetails();
@@ -15,6 +18,17 @@ export default function RecipeDetails() {
   const [sliceValue, setSliceValue] = useState(0);
   const { pathname } = useLocation();
   const [inProgressRecipe, setInProgressRecipe] = useState(false);
+  const [maybeFavorite, setMaybeFavorite] = useState<FavoriteRecipeType>({
+    id: '',
+    type: '',
+    nationality: '',
+    category: '',
+    alcoholicOrNot: '',
+    name: '',
+    image: '',
+  });
+  const [isFavorite, setIsFavorite] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,27 +53,37 @@ export default function RecipeDetails() {
     }
   }, [recipeDetails?.id]);
 
+  useEffect(() => {
+    setMaybeFavorite({
+      id: recipeDetails?.id || '',
+      type: pathname.includes('meals') ? 'meal' : 'drink',
+      nationality: recipeDetails?.strArea || '',
+      category: recipeDetails?.strCategory || '',
+      alcoholicOrNot: pathname
+        .includes('drinks') ? recipeDetails?.strAlcoholic || '' : '',
+      name: recipeDetails?.str || '',
+      image: recipeDetails?.img || '',
+    });
+    const isFavorited: FavoriteRecipeType[] = JSON.parse(localStorage
+      .getItem('favoriteRecipes') || '[]')
+      .find(
+        (recipe: FavoriteRecipeType) => (
+          recipe.id === recipeDetails?.id
+        ),
+      );
+    if (isFavorited) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
+    }
+  }, [recipeDetails, pathname]);
+
   if (!recipeDetails) return (<div>Loading...</div>);
 
   const { ingredients, measures } = getIngredientsAndMeasures(recipeDetails);
+
   const startRecipe = () => {
-    const inProgress = JSON.parse(localStorage
-      .getItem('inProgressRecipes') || '{}');
-    localStorage.setItem('inProgressRecipes', JSON.stringify(
-      pathname.includes('/meals') ? {
-        ...inProgress,
-        meals: {
-          ...inProgress.meals,
-          [recipeDetails.id]: ingredients.map((ingredient) => ingredient),
-        },
-      } : {
-        ...inProgress,
-        drinks: {
-          ...inProgress.drinks,
-          [recipeDetails.id]: ingredients.map((ingredient) => ingredient),
-        },
-      },
-    ));
+    saveToStartRecipe(recipeDetails, ingredients, pathname);
     setInProgressRecipe(true);
     navigate(`${pathname}/in-progress`);
   };
@@ -67,6 +91,22 @@ export default function RecipeDetails() {
   const copyLink = () => {
     navigator.clipboard.writeText(`http://localhost:3000${pathname}`);
     setShowCopyMessage(true);
+  };
+
+  const saveFavAndChangeIcon = () => {
+    saveToFavorites(maybeFavorite);
+    const isFavorited: FavoriteRecipeType[] = JSON.parse(localStorage
+      .getItem('favoriteRecipes') || '[]')
+      .find(
+        (recipe: FavoriteRecipeType) => (
+          recipe.id === recipeDetails?.id
+        ),
+      );
+    if (isFavorited) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
+    }
   };
 
   return (
@@ -88,14 +128,25 @@ export default function RecipeDetails() {
           <Button data-testid="share-btn" onClick={ copyLink }>
             <Img src={ shareIcon } alt="share" />
           </Button>
-          <Button data-testid="favorite-btn">
-            <Img src={ heartIcon } alt="favorite" />
+          <Button
+            onClick={ saveFavAndChangeIcon }
+          >
+            <Img
+              src={ isFavorite ? fullHeartIcon : emptyHeartIcon }
+              alt="favorite"
+              data-testid="favorite-btn"
+            />
           </Button>
           {showCopyMessage && <Text fontSize="sm">Link copied!</Text>}
         </Center>
         <Center flexDirection="column">
           <Heading data-testid="recipe-title">{ recipeDetails.str }</Heading>
-          <Text data-testid="recipe-category">{ recipeDetails.strCategory }</Text>
+          <Text data-testid="recipe-category">
+            {
+          pathname.includes('meals') ? (
+            recipeDetails.strCategory) : (recipeDetails.strAlcoholic)
+          }
+          </Text>
         </Center>
         <Center>
           <Heading>Ingredients</Heading>
@@ -193,29 +244,6 @@ export default function RecipeDetails() {
           {inProgressRecipe ? 'Continue Recipe' : 'Start Recipe'}
         </Button>
       </Center>
-      {/* inProgressRecipe && (
-        <button
-          data-testid="start-recipe-btn"
-          style={ { position: 'fixed', bottom: '0px', backgroundColor: 'yellow' } }
-        >
-          Continue Recipe
-        </button>
-      )}
-      {         <Center margin={ 4 }>
-          </Center>      <Button
-            colorScheme="yellow"
-            data-testid="start-recipe-btn"
-            color="white"
-            width="100%"
-            position="fixed"
-            bottom="0px"
-            borderRadius={ 0 }
-            maxW="360px"
-            maxH="640px"
-          >
-            Continue Recipe
-          </Button> */}
-
     </>
   );
 }

@@ -18,11 +18,11 @@ export function ProductDetailsConverter(data: MealsDetailsType | DrinksDetailsTy
       id: newData.idDrink,
       str: newData.strDrink,
       img: newData.strDrinkThumb,
-      strCategory: newData.strAlcoholic,
+      strCategory: newData.strCategory,
+      strAlcoholic: newData.strAlcoholic,
     };
     delete newData.idDrink;
     delete newData.strDrink;
-    delete newData.strAlcoholic;
     return { ...newData, ...uniqueValues } as ProductDetailsType;
   }
   return null;

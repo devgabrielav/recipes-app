@@ -28,6 +28,7 @@ type DetailsCommonKeys = {
   strImageSource: string | null;
   strCreativeCommonsConfirmed: string | null;
   dateModified: string | null;
+  strAlcoholic?: string,
 };
 export type MealsDetailsType = {
   idMeal: string;
@@ -49,6 +50,16 @@ export type ProductDetailsType = {
   str: string;
   img: string;
 } & DetailsCommonKeys;
+
+export type FavoriteRecipeType = {
+  id: string
+  type: string,
+  nationality: string,
+  category: string,
+  alcoholicOrNot: string,
+  name: string,
+  image: string
+};
 
 export type LayoutContextType = [
   LayoutType, React.Dispatch<React.SetStateAction<LayoutType>>];
