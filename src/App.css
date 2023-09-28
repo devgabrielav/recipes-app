@@ -1,3 +1,9 @@
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
 .meals {
   align-items: center;
   background: #0fa36b;
@@ -39,12 +45,13 @@
 
 footer {
   background-color: #41197f;
+  border-radius: 5px;
   bottom: 0;
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
   position: fixed;
-  width: 100%;
+  width: 360px;
 }
 
 @keyframes shake {

@@ -17,22 +17,27 @@ type RecipeCardProps = {
 function RecipeCard({ recipe, index, baseHeadTestId = 'card-name' }: RecipeCardProps) {
   const { pathname } = useLocation();
   return (
-    <Card data-testid={ `${index}-recipe-card` }>
+    <Card
+      data-testid={ `${index}-recipe-card` }
+      maxW="360px"
+      maxH="640px"
+      alignItems="center"
+    >
       <Link as={ DomLink } to={ `${pathname}/${recipe.idMeal || recipe.idDrink}` }>
-        <CardHeader>
-          <Heading
-            data-testid={ `${index}-${baseHeadTestId}` }
-            size="md"
-          >
-            {recipe.strMeal || recipe.strDrink }
-          </Heading>
-        </CardHeader>
         <CardBody>
           <img
             data-testid={ `${index}-card-img` }
             src={ recipe.strMealThumb || recipe.strDrinkThumb }
             alt={ recipe.strMeal || recipe.strDrink }
           />
+          <Heading
+            data-testid={ `${index}-${baseHeadTestId}` }
+            size="md"
+          >
+            <CardHeader>
+              {recipe.strMeal || recipe.strDrink }
+            </CardHeader>
+          </Heading>
         </CardBody>
       </Link>
     </Card>
