@@ -8,7 +8,9 @@ import recipesAppIcon from '../../images/recipesAppIcon.svg';
 import recipesAppTitle from '../../images/recipesAppTitle.svg';
 import drinksIcon from '../../images/drinkIcon.svg';
 import mealsIcon from '../../images/mealIcon.svg';
+import heart from '../../images/blackHeartIcon.svg';
 import SearchBar from '../SearchBar/SearchBar';
+import profile from '../../images/perfil.png';
 
 export default function Header() {
   const [search, setSearch] = useState({
@@ -34,7 +36,9 @@ export default function Header() {
   };
 
   return (
-    <header>
+    <header
+      style={ { width: '360px' } }
+    >
       <Flex
         bg="#FCDC36"
         paddingInline={ 4 }
@@ -79,11 +83,22 @@ export default function Header() {
         margin="auto"
         flexDirection="column"
       >
-        <img
+        {(pathname === '/meals' || pathname === '/drinks') && <img
           src={ pathname === '/meals' ? mealsIcon : drinksIcon }
           alt={ pathname === '/meals' ? 'mealIcon' : 'drinkIcon' }
           style={ { marginTop: '20px' } }
-        />
+          data-testid="typeRoute"
+        /> }
+        {pathname === '/profile' && <img
+          src={ profile }
+          alt="profileIcon"
+          style={ { marginTop: '20px' } }
+        />}
+        {pathname === '/favorite-recipes' && <img
+          src={ heart }
+          alt="profileIcon"
+          style={ { marginTop: '20px' } }
+        />}
         <Heading
           data-testid="page-title"
           color="#41197F"

@@ -5,11 +5,23 @@ import { renderWithRouter } from '../helper/renderWithRouter';
 const recipesAppIcon = '/src/images/recipesAppIcon.svg';
 const recipesAppTitle = '/src/images/recipesAppTitle.svg';
 const searchIcon = '/src/images/searchIcon.svg';
+const drinksIcon = '/src/images/drinkIcon.svg';
+const mealsIcon = '/src/images/mealIcon.svg';
 
 describe('Header é exibido corretamente ', () => {
   it(`a primeira tag img contem o src '${recipesAppIcon}'`, () => {
     renderWithRouter(<Header />, { route: '/meals' });
     expect(screen.getAllByRole('img')[0]).toHaveAttribute('src', recipesAppIcon);
+  });
+
+  it('Na rota /meals renderiza a imagem de meal ', () => {
+    renderWithRouter(<Header />, { route: '/meals' });
+    expect(screen.getByTestId('typeRoute')).toHaveAttribute('src', mealsIcon);
+  });
+
+  it('Na rota /drinks renderiza a imagem de drinks', () => {
+    renderWithRouter(<Header />, { route: '/drinks' });
+    expect(screen.getByTestId('typeRoute')).toHaveAttribute('src', drinksIcon);
   });
 
   it(`a segunda tag img contem o src '${recipesAppTitle}'`, () => {
