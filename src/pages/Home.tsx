@@ -1,12 +1,14 @@
 import Footer from '../components/Footer';
 import Header from '../components/Header';
-import Layout from '../components/Layout/Layout';
+import RecipesCategories from '../components/RecipesCategories/RecipesCategories';
+import Recipes from '../components/Recipes';
 
 export default function Home() {
   return (
     <>
       <Header />
-      <Layout />
+      <RecipesCategories />
+      <Recipes />
       <Footer />
     </>
   );

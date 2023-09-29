@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { ProductDetailsType, RecipeType } from '../utils/types';
 import { getDrinkById, getDrinksRecommendations,
   getMealById, getMealsRecommendations } from '../helper/helpersAPI';
@@ -12,10 +12,11 @@ type DataReturnType = {
 
 export default function useRecipesDetails() {
   const { pathname } = useLocation();
-  const isMealsPath = pathname.replace(/\/(.*)\/.*/, '$1') === 'meals';
-  const id = pathname.replace(/\/.*\/(.*)/, '$1');
+  const isMealsPath = pathname.includes('meals');
+  const { id } = useParams();
   const [data, setData] = useState<DataReturnType>({ recipeDetails: null,
     recommendations: [] });
+  if (!id) throw new Error('ID not found!');
 
   useEffect(() => {
     (async () => {

@@ -28,7 +28,8 @@ export function ProductDetailsConverter(data: MealsDetailsType | DrinksDetailsTy
   return null;
 }
 
-export function getIngredientsAndMeasures(recipeDetails: ProductDetailsType) {
+export function getIngredientsAndMeasures(recipeDetails: ProductDetailsType | null) {
+  if (!recipeDetails) return { ingredients: [], measures: [] };
   const ingredients = Object.keys(recipeDetails).filter((key) => (key
     .includes('strIngredient'))).reduce<string[]>((arr, key) => {
     const ingredient = recipeDetails[key as keyof typeof recipeDetails];
