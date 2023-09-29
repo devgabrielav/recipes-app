@@ -87,6 +87,7 @@ export default function Header() {
           src={ pathname === '/meals' ? mealsIcon : drinksIcon }
           alt={ pathname === '/meals' ? 'mealIcon' : 'drinkIcon' }
           style={ { marginTop: '20px' } }
+          data-testid="typeRoute"
         /> }
         {pathname === '/profile' && <img
           src={ profile }
