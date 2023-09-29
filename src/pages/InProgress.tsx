@@ -1,5 +1,5 @@
 import { Box, Button, Card, Center, Text } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import RecipeLayout from '../components/RecipeLayout';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
@@ -10,13 +10,35 @@ export default function InProgress() {
   const { ingredients, measures } = getIngredientsAndMeasures(recipeDetails);
   const { checkeds, onChange } = useSaveInProgressRecipe(recipeDetails?.id);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const checkedValues = Object.values(checkeds);
   const finish = checkedValues.length === ingredients.length
-   && checkedValues.every((value) => value === true)
-   && checkedValues.length > 0;
+    && checkedValues.every((value) => value === true)
+    && checkedValues.length > 0;
 
-  console.log(recipeDetails);
+  const saveToDoneAndNavigate = () => {
+    const tagsArray = recipeDetails?.strTags === null ? [] : recipeDetails?.strTags
+      .split(',');
+    const now = new Date();
+    const doneRecipesLocal = JSON.parse(localStorage.getItem('doneRecipes') || '[]');
+    localStorage.setItem('doneRecipes', JSON.stringify([
+      ...doneRecipesLocal,
+      {
+        id: recipeDetails?.id,
+        type: pathname.includes('meals') ? 'meal' : 'drink',
+        nationality: recipeDetails?.strArea || '',
+        category: recipeDetails?.strCategory || '',
+        alcoholicOrNot: recipeDetails?.strAlcoholic || '',
+        name: recipeDetails?.str,
+        image: recipeDetails?.img,
+        doneDate: now,
+        tags: tagsArray,
+      },
+    ]));
+
+    navigate('/done-recipes');
+  };
 
   if (!recipeDetails) return (<div>Loading...</div>);
   return (
@@ -28,16 +50,14 @@ export default function InProgress() {
             w="100%"
             colorScheme="gray"
             paddingLeft={ 2 }
-            data-testid="ingredient-step"
-            textDecoration="line-through solid rgb(0, 0, 0)"
           >
             {ingredients.map((ingredient, index) => (
               <Box key={ ingredient }>
-                <Text
-                  display="inline-block"
-                  marginInline={ 2 }
-                  color="rgb(0,0,0)"
+                <label
                   data-testid={ `${index}-ingredient-step` }
+                  style={ checkeds[ingredient] ? (
+                    { textDecoration: 'line-through solid rgb(0, 0, 0)' }) : (
+                    { textDecoration: 'none' }) }
                 >
                   <input
                     type="checkbox"
@@ -45,10 +65,13 @@ export default function InProgress() {
                     onChange={ () => { onChange(ingredient); } }
                   />
                   {ingredient}
-                </Text>
+                </label>
                 <Text
                   display="inline-block"
                   color="rgb(0,0,0)"
+                  textDecoration={
+                    checkeds[ingredient] ? 'line-through solid rgb(0, 0, 0)' : 'none'
+}
                 >
                   {measures[index]}
                 </Text>
@@ -67,7 +90,7 @@ export default function InProgress() {
           colorScheme="yellow"
           color="white"
           isDisabled={ !finish }
-          onClick={ () => navigate('/done-recipes') }
+          onClick={ saveToDoneAndNavigate }
           display={ finish ? 'block' : 'none' }
         >
           Finish Recipe

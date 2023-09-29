@@ -2,6 +2,7 @@ import { MealsDetailsType, DrinksDetailsType, ProductDetailsType } from '../util
 
 export function ProductDetailsConverter(data: MealsDetailsType | DrinksDetailsType) {
   const newData = { ...data } as any;
+
   if ('idMeal' in data) {
     const uniqueValues = {
       id: newData.idMeal,
@@ -34,7 +35,7 @@ export function getIngredientsAndMeasures(recipeDetails: ProductDetailsType | nu
     .includes('strIngredient'))).reduce<string[]>((arr, key) => {
     const ingredient = recipeDetails[key as keyof typeof recipeDetails];
     if (ingredient) {
-      arr.push(ingredient);
+      arr.push(ingredient as string);
     }
     return arr;
   }, []);
@@ -42,7 +43,7 @@ export function getIngredientsAndMeasures(recipeDetails: ProductDetailsType | nu
     .includes('strMeasure'))).reduce<string[]>((arr, key) => {
     const measure = recipeDetails[key as keyof typeof recipeDetails];
     if (measure) {
-      arr.push(measure);
+      arr.push(measure as string);
     }
     return arr;
   }, []);
