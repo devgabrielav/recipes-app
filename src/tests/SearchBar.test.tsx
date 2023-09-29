@@ -5,6 +5,8 @@ import { screen, fireEvent, render, act } from '@testing-library/react';
 import { renderWithRouter } from '../helper/renderWithRouter';
 import SearchBar from '../components/SearchBar/SearchBar';
 
+import { searchCocktailsAPI, searchMealsAPI } from '../helper/helpersAPI';
+
 const searchInputTestId = 'search-input';
 const ingredientSearchRadioTestId = 'ingredient-search-radio';
 const nameSearchRadioTestId = 'name-search-radio';
@@ -93,7 +95,22 @@ const SINGLE_DRINK_MOCK_RESPONSE = {
   json: async () => SINGLE_DRINK_RESPONSE,
 } as Response;
 
+test('Testa searchMealsAPI', async () => {
+  const dataMeals = await searchMealsAPI('ingredient', 'Chicken');
+  expect(dataMeals[0].idMeal).toEqual('52940');
+  const dataMeals2 = await searchMealsAPI('first-letter', 'C');
+  expect(dataMeals2[0].idMeal).toEqual('52776');
+  const dataMeals3 = await searchCocktailsAPI('first-letter', 'C');
+  expect(dataMeals3[0].idDrink).toEqual('17185');
+  global.fetch = vi.fn().mockResolvedValue({});
+  const dataMealsNull = await searchMealsAPI('ingredient', 'Chicken');
+  expect(dataMealsNull.length).toEqual(0);
+});
+
 describe('Testa SearchBar component', () => {
+  test('executa a pesquisa de refeições e navega para o único resultado', async () => {
+    renderWithRouter(<SearchBar />, { route: '/meals' });
+  });
   it('Deve renderizar os elementos corretamente', () => {
     renderWithRouter(<SearchBar />);
 

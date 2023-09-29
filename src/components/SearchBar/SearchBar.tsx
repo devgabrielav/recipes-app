@@ -32,7 +32,7 @@ export default function SearchBar() {
     }
     if (pathname === '/meals') {
       const dataMeals = await searchMealsAPI(searchOption, searchInput);
-      updateSearchResults(dataMeals || [], 'meals');
+      updateSearchResults(dataMeals, 'meals');
       if (!dataMeals.length) {
         return window.alert("Sorry, we haven't found any recipes for these filters.");
       }
@@ -42,7 +42,7 @@ export default function SearchBar() {
     }
     if (pathname === '/drinks') {
       const data = await searchCocktailsAPI(searchOption, searchInput);
-      updateSearchResults(data || [], 'drinks');
+      updateSearchResults(data, 'drinks');
       if (!data.length) {
         return window.alert("Sorry, we haven't found any recipes for these filters.");
       }

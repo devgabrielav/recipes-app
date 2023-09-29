@@ -18,7 +18,7 @@ async function searchMealsAPI(option: string, query: string) : Promise<RecipeTyp
   try {
     const response = await fetch(endpoint);
     const data = await response.json();
-    return data.meals ? data.meals : [];
+    return data.meals;
   } catch (error) {
     console.error('Erro:', error);
     return [];
