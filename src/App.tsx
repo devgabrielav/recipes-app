@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import RecipeDetails from './pages/RecipeDetails';
 import InProgress from './pages/InProgress';
 import DoneRecipes from './components/doneRecipes';
+import Profile from './pages/Profile';
+import Header from './components/Header';
 
 function App() {
   return (
@@ -14,8 +16,8 @@ function App() {
         <Route path="/" element={ <Login /> } />
         <Route path="/meals" element={ <Home /> } />
         <Route path="/drinks" element={ <Home /> } />
-        <Route path="/profile" element={ <Home /> } />
-        <Route path="/favorite-recipes" element={ <Home /> } />
+        <Route path="/profile" element={ <Profile /> } />
+        <Route path="/favorite-recipes" element={ <Header /> } />
         <Route path="/meals/:id" element={ <RecipeDetails /> } />
         <Route path="/drinks/:id" element={ <RecipeDetails /> } />
         <Route path="/meals/:id/in-progress" element={ <InProgress /> } />
