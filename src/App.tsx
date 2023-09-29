@@ -5,6 +5,7 @@ import Login from './components/Login/Login';
 import Home from './pages/Home';
 import RecipeDetails from './pages/RecipeDetails';
 import InProgress from './pages/InProgress';
+import DoneRecipes from './components/doneRecipes';
 
 function App() {
   return (
@@ -14,12 +15,12 @@ function App() {
         <Route path="/meals" element={ <Home /> } />
         <Route path="/drinks" element={ <Home /> } />
         <Route path="/profile" element={ <Home /> } />
-        <Route path="/done-recipes" element={ <Home /> } />
         <Route path="/favorite-recipes" element={ <Home /> } />
         <Route path="/meals/:id" element={ <RecipeDetails /> } />
         <Route path="/drinks/:id" element={ <RecipeDetails /> } />
         <Route path="/meals/:id/in-progress" element={ <InProgress /> } />
         <Route path="/drinks/:id/in-progress" element={ <InProgress /> } />
+        <Route path="/done-recipes" element={ <DoneRecipes /> } />
       </Routes>
     </LayoutProvider>
   );
