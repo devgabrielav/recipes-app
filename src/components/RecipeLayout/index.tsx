@@ -1,4 +1,4 @@
-import { Center, Img, Button, Text, Box } from '@chakra-ui/react';
+import { Center, Img, Button, Text, Box, Heading, Card } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import useRecipesDetails from '../../hooks/useRecipesDetails';
@@ -8,7 +8,7 @@ import shareIcon from '../../images/shareIcon.svg';
 import fullHeartIcon from '../../images/blackHeartIcon.svg';
 import emptyHeartIcon from '../../images/whiteHeartIcon.svg';
 
-export default function RecipeHeader() {
+export default function RecipeImage({ children }: { children: React.ReactNode }) {
   const { recipeDetails } = useRecipesDetails();
   const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -49,7 +49,7 @@ export default function RecipeHeader() {
   }, [recipeDetails, pathname]);
 
   const copyLink = () => {
-    const URL = window.location.href;
+    const URL = window.location.href.replace('/in-progress', '');
     navigator.clipboard.writeText(URL);
     setShowCopyMessage(true);
   };
@@ -72,26 +72,44 @@ export default function RecipeHeader() {
 
   if (!recipeDetails) return <div>Loading...</div>;
   return (
-    <Center marginTop="20px" flexDirection="column" gap={ 4 }>
-      <Img
-        src={ recipeDetails.img }
-        alt={ recipeDetails.str }
-        height={ 162 }
-        data-testid="recipe-photo"
-      />
-      <Box>
-        <Button data-testid="share-btn" onClick={ copyLink } variant="ghost">
-          <Img src={ shareIcon } alt="share" />
-        </Button>
-        <Button onClick={ saveFavAndChangeIcon } variant="ghost">
-          <Img
-            src={ isFavorite ? fullHeartIcon : emptyHeartIcon }
-            alt="favorite"
-            data-testid="favorite-btn"
-          />
-        </Button>
-        {showCopyMessage && <Text fontSize="sm">Link copied!</Text>}
-      </Box>
-    </Center>
+    <>
+      <Center
+        marginTop="20px"
+        flexDirection="column"
+        gap={ 4 }
+      >
+        <Img
+          src={ recipeDetails.img }
+          alt={ recipeDetails.str }
+          height={ 162 }
+          data-testid="recipe-photo"
+        />
+        <Box>
+          <Button data-testid="share-btn" onClick={ copyLink } variant="ghost">
+            <Img src={ shareIcon } alt="share" />
+          </Button>
+          <Button onClick={ saveFavAndChangeIcon } variant="ghost">
+            <Img
+              src={ isFavorite ? fullHeartIcon : emptyHeartIcon }
+              alt="favorite"
+              data-testid="favorite-btn"
+            />
+          </Button>
+          {showCopyMessage && <Text fontSize="sm">Link copied!</Text>}
+        </Box>
+      </Center>
+      <Center flexDirection="column">
+        <Heading data-testid="recipe-title">{ recipeDetails.str }</Heading>
+        <Text data-testid="recipe-category">
+          {pathname.includes('meals') ? (
+            recipeDetails.strCategory) : (recipeDetails.strAlcoholic)}
+        </Text>
+        {children}
+        <Heading>Instructions</Heading>
+        <Card padding={ 4 }>
+          <p data-testid="instructions">{recipeDetails.strInstructions}</p>
+        </Card>
+      </Center>
+    </>
   );
 }

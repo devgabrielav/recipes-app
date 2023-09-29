@@ -7,7 +7,7 @@ import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
 import { saveToStartRecipe } from '../helper/useLocalStorage';
 import RecipeCard from '../components/RecipeCard';
-import RecipeHeader from '../components/RecipeHeader';
+import RecipeLayout from '../components/RecipeLayout';
 
 export default function RecipeDetails() {
   const { recipeDetails, recommendations } = useRecipesDetails();
@@ -58,49 +58,37 @@ export default function RecipeDetails() {
         flexDirection="column"
         alignItems="center"
       >
-        <RecipeHeader />
-        <Center flexDirection="column">
-          <Heading data-testid="recipe-title">{ recipeDetails.str }</Heading>
-          <Text data-testid="recipe-category">
-            {
-          pathname.includes('meals') ? (
-            recipeDetails.strCategory) : (recipeDetails.strAlcoholic)
-          }
-          </Text>
-        </Center>
-        <Center>
-          <Heading>Ingredients</Heading>
-        </Center>
-        <Card
-          padding={ 4 }
-          width="100%"
-          maxW="360px"
-          maxH="640px"
-        >
-          <UnorderedList>
-            {ingredients.map((ingredient, index) => (
-              <ListItem key={ ingredient }>
-                <Text
-                  display="inline-block"
-                  data-testid={ `${index}-ingredient-name-and-measure` }
-                  marginInline={ 2 }
-                >
-                  {ingredient}
-                </Text>
-                <Text
-                  display="inline-block"
-                  data-testid={ `${index}-ingredient-name-and-measure` }
-                >
-                  {measures[index]}
-                </Text>
-              </ListItem>
-            ))}
-          </UnorderedList>
-        </Card>
-        <Heading>Instructions</Heading>
-        <Card padding={ 4 }>
-          <p data-testid="instructions">{recipeDetails.strInstructions}</p>
-        </Card>
+        <RecipeLayout>
+          <Center>
+            <Heading>Ingredients</Heading>
+          </Center>
+          <Card
+            padding={ 4 }
+            width="100%"
+            maxW="360px"
+            maxH="640px"
+          >
+            <UnorderedList>
+              {ingredients.map((ingredient, index) => (
+                <ListItem key={ ingredient }>
+                  <Text
+                    display="inline-block"
+                    data-testid={ `${index}-ingredient-name-and-measure` }
+                    marginInline={ 2 }
+                  >
+                    {ingredient}
+                  </Text>
+                  <Text
+                    display="inline-block"
+                    data-testid={ `${index}-ingredient-name-and-measure` }
+                  >
+                    {measures[index]}
+                  </Text>
+                </ListItem>
+              ))}
+            </UnorderedList>
+          </Card>
+        </RecipeLayout>
         {recipeDetails.strYoutube && (
           <>
             <Heading>Video</Heading>
