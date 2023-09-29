@@ -23,7 +23,7 @@ export default function Recipes() {
 
   return (
     <main style={ { margin: 'auto', display: 'flex', width: '360px', height: '640px' } }>
-      <SimpleGrid columns={ 1 } spacing={ 3 }>
+      <SimpleGrid columns={ 2 } spacing={ 3 }>
         {pathname === '/meals' && searchResults.meals.length > 0 && (
           searchResults.meals.slice(0, 12).map((meal, index) => (
             <RecipeCard
