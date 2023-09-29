@@ -1,33 +1,19 @@
-import { Center, Heading, Img, UnorderedList, ListItem, Card,
+import { Center, Heading, UnorderedList, ListItem, Card,
   Container, SimpleGrid, Button,
   Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
-import { saveToFavorites, saveToStartRecipe } from '../helper/helpersFunctions';
+import { saveToStartRecipe } from '../helper/useLocalStorage';
 import RecipeCard from '../components/RecipeCard';
-import shareIcon from '../images/shareIcon.svg';
-import emptyHeartIcon from '../images/whiteHeartIcon.svg';
-import fullHeartIcon from '../images/blackHeartIcon.svg';
-import { FavoriteRecipeType } from '../utils/types';
+import RecipeHeader from '../components/RecipeHeader';
 
 export default function RecipeDetails() {
   const { recipeDetails, recommendations } = useRecipesDetails();
-  const [showCopyMessage, setShowCopyMessage] = useState(false);
   const [sliceValue, setSliceValue] = useState(0);
   const { pathname } = useLocation();
   const [inProgressRecipe, setInProgressRecipe] = useState(false);
-  const [maybeFavorite, setMaybeFavorite] = useState<FavoriteRecipeType>({
-    id: '',
-    type: '',
-    nationality: '',
-    category: '',
-    alcoholicOrNot: '',
-    name: '',
-    image: '',
-  });
-  const [isFavorite, setIsFavorite] = useState(false);
 
   const navigate = useNavigate();
 
@@ -53,31 +39,6 @@ export default function RecipeDetails() {
     }
   }, [recipeDetails?.id]);
 
-  useEffect(() => {
-    setMaybeFavorite({
-      id: recipeDetails?.id || '',
-      type: pathname.includes('meals') ? 'meal' : 'drink',
-      nationality: recipeDetails?.strArea || '',
-      category: recipeDetails?.strCategory || '',
-      alcoholicOrNot: pathname
-        .includes('drinks') ? recipeDetails?.strAlcoholic || '' : '',
-      name: recipeDetails?.str || '',
-      image: recipeDetails?.img || '',
-    });
-    const isFavorited: FavoriteRecipeType[] = JSON.parse(localStorage
-      .getItem('favoriteRecipes') || '[]')
-      .find(
-        (recipe: FavoriteRecipeType) => (
-          recipe.id === recipeDetails?.id
-        ),
-      );
-    if (isFavorited) {
-      setIsFavorite(true);
-    } else {
-      setIsFavorite(false);
-    }
-  }, [recipeDetails, pathname]);
-
   if (!recipeDetails) return (<div>Loading...</div>);
 
   const { ingredients, measures } = getIngredientsAndMeasures(recipeDetails);
@@ -86,27 +47,6 @@ export default function RecipeDetails() {
     saveToStartRecipe(recipeDetails, ingredients, pathname);
     setInProgressRecipe(true);
     navigate(`${pathname}/in-progress`);
-  };
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(`http://localhost:3000${pathname}`);
-    setShowCopyMessage(true);
-  };
-
-  const saveFavAndChangeIcon = () => {
-    saveToFavorites(maybeFavorite);
-    const isFavorited: FavoriteRecipeType[] = JSON.parse(localStorage
-      .getItem('favoriteRecipes') || '[]')
-      .find(
-        (recipe: FavoriteRecipeType) => (
-          recipe.id === recipeDetails?.id
-        ),
-      );
-    if (isFavorited) {
-      setIsFavorite(true);
-    } else {
-      setIsFavorite(false);
-    }
   };
 
   return (
@@ -118,27 +58,7 @@ export default function RecipeDetails() {
         flexDirection="column"
         alignItems="center"
       >
-        <Center marginTop="20px">
-          <Img
-            src={ recipeDetails.img }
-            alt={ recipeDetails.str }
-            height={ 162 }
-            data-testid="recipe-photo"
-          />
-          <Button data-testid="share-btn" onClick={ copyLink }>
-            <Img src={ shareIcon } alt="share" />
-          </Button>
-          <Button
-            onClick={ saveFavAndChangeIcon }
-          >
-            <Img
-              src={ isFavorite ? fullHeartIcon : emptyHeartIcon }
-              alt="favorite"
-              data-testid="favorite-btn"
-            />
-          </Button>
-          {showCopyMessage && <Text fontSize="sm">Link copied!</Text>}
-        </Center>
+        <RecipeHeader />
         <Center flexDirection="column">
           <Heading data-testid="recipe-title">{ recipeDetails.str }</Heading>
           <Text data-testid="recipe-category">
