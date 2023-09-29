@@ -9,6 +9,14 @@ export type RecipeType = {
   strDrink?: string;
   strMealThumb?: string;
   strDrinkThumb?: string;
+  nationality: string;
+  category: string;
+  type: string;
+  name: string;
+  alcoholicOrNot: string;
+  doneDate: string;
+  src: string;
+  image: string;
 };
 
 export type SearchResultsType = {
