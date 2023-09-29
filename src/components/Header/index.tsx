@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Box, Link as ChakraLink,
-  Heading, Flex, Center } from '@chakra-ui/react';
+  Heading, Flex, Center, Container } from '@chakra-ui/react';
 import { useState } from 'react';
 import profileIcon from '../../images/profileIcon.svg';
 import searchIcon from '../../images/searchIcon.svg';
@@ -94,8 +94,7 @@ export default function Header() {
         </Heading>
       </Center>
 
-      {search.isVisible && (
-        <SearchBar />)}
+      {search.isVisible && (<Container padding={ 2 }><SearchBar /></Container>)}
     </header>
   );
 }
