@@ -15,6 +15,8 @@ describe('Testa o componente DoneRecipes', () => {
   });
 
   it('Lida com JSON nulo ou indefinido', () => {
+    renderWithRouter(<DoneRecipes />, { route: '/done-recipes' });
+
     localStorage.setItem('doneRecipes', '');
 
     const doneRecipesData = JSON.parse(localStorage.getItem('doneRecipes') || '[]');
