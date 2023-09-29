@@ -1,5 +1,7 @@
+import Header from '../Header';
+
 export default function DoneRecipes() {
   return (
-    <div>DoneRecipes</div>
+    <Header />
   );
 }
