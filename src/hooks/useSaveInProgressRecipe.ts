@@ -28,7 +28,6 @@ function useSaveInProgressRecipe(id = '') {
 
   const onChange = (ingredient: string) => {
     const newCheckeds = { ...checkeds, [ingredient]: !checkeds[ingredient] };
-    console.log(newCheckeds);
 
     setCheckeds(newCheckeds);
     save(id, newCheckeds);
