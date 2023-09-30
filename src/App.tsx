@@ -5,7 +5,7 @@ import Login from './components/Login/Login';
 import Home from './pages/Home';
 import RecipeDetails from './pages/RecipeDetails';
 import InProgress from './pages/InProgress';
-import DoneRecipes from './components/doneRecipes';
+import DoneRecipes from './components/DoneRecipes';
 import Profile from './pages/Profile';
 import Header from './components/Header';
 

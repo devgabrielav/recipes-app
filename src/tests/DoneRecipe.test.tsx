@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react';
-import DoneRecipes from '../components/doneRecipes';
+import DoneRecipes from '../components/DoneRecipes';
 import { renderWithRouter } from '../helper/renderWithRouter';
 
 describe('Testa o componente DoneRecipes', () => {
