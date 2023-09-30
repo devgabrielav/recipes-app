@@ -29,25 +29,29 @@ export default function SearchBar() {
     event.preventDefault();
     if (searchOption === 'first-letter' && searchInput.length > 1) {
       window.alert('Your search must have only 1 (one) character');
+      return;
     }
     if (pathname === '/meals') {
       const dataMeals = await searchMealsAPI(searchOption, searchInput);
-      updateSearchResults(dataMeals || [], 'meals');
+      updateSearchResults(dataMeals, 'meals');
       if (!dataMeals.length) {
-        return window.alert("Sorry, we haven't found any recipes for these filters.");
+        window.alert("Sorry, we haven't found any recipes for these filters.");
+        return;
       }
       if (dataMeals.length === 1) {
         navigate(`/meals/${dataMeals[0].idMeal}`);
+        return;
       }
     }
     if (pathname === '/drinks') {
-      const data = await searchCocktailsAPI(searchOption, searchInput);
-      updateSearchResults(data || [], 'drinks');
-      if (!data.length) {
-        return window.alert("Sorry, we haven't found any recipes for these filters.");
+      const dataDrinks = await searchCocktailsAPI(searchOption, searchInput);
+      updateSearchResults(dataDrinks, 'drinks');
+      if (!dataDrinks.length) {
+        window.alert("Sorry, we haven't found any recipes for these filters.");
+        return;
       }
-      if (data.length === 1) {
-        return navigate(`/drinks/${data[0].idDrink}`);
+      if (dataDrinks.length === 1) {
+        navigate(`/drinks/${dataDrinks[0].idDrink}`);
       }
     }
   };
