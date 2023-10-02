@@ -96,7 +96,6 @@ function DoneRecipes() {
               data-testid={ `${index}-horizontal-share-btn` }
               mt={ 2 }
               as="button"
-              src="shareIcon"
             >
               <Image src={ shareIcon } alt="Share" w={ 4 } h={ 4 } mr={ 2 } />
               Share
