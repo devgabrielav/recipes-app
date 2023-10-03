@@ -7,7 +7,7 @@ import App from '../App';
 import useSaveInProgressRecipe from '../hooks/useSaveInProgressRecipe';
 import RecipeDetails from '../pages/RecipeDetails';
 
-const delay = () => new Promise((resolve) => setTimeout(resolve, 2000));
+const delay = () => new Promise((resolve) => { setTimeout(resolve, 2000); });
 describe('useRecipesDetails', async () => {
   it('throw error case id route is not found', async () => {
     expect(() => renderWithRouter(<RecipeDetails />, { route: '/meals/52885' })).toThrow('ID not found!');
@@ -38,6 +38,10 @@ describe('useSaveInProgressRecipe', () => {
     global.localStorage = {
       getItem: vi.fn().mockReturnValue('{}'),
       setItem: vi.fn(),
+      length: 0,
+      clear: () => {},
+      removeItemts: () => {},
+      key: () => '',
     };
     act(() => {
       onChange('fakeIngredient');

@@ -1,9 +1,9 @@
 import { Box, Button, Card, Center, Text } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import RecipeLayout from './RecipeLayout';
-import useRecipesDetails from '../hooks/useRecipesDetails';
-import { getIngredientsAndMeasures } from '../helper/dataConverters';
-import useSaveInProgressRecipe from '../hooks/useSaveInProgressRecipe';
+import RecipeLayout from '../RecipeLayout';
+import useRecipesDetails from '../../hooks/useRecipesDetails';
+import { getIngredientsAndMeasures } from '../../helper/dataConverters';
+import useSaveInProgressRecipe from '../../hooks/useSaveInProgressRecipe';
 
 export default function InProgress() {
   const { recipeDetails } = useRecipesDetails();

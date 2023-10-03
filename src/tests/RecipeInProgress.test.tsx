@@ -3,16 +3,16 @@ import userEvent from '@testing-library/user-event';
 import App from '../App';
 import { renderWithRouter } from '../helper/renderWithRouter';
 
-const delay = () => new Promise((resolve) => setTimeout(resolve, 2000));
+const delay = () => new Promise((resolve) => { setTimeout(resolve, 2000); });
 describe('show title', () => {
   it('show title', async () => {
     renderWithRouter(<App />, { route: '/meals/52885/in-progress' });
-    await delay(3000);
+    await delay();
     expect(screen.getByText('Bubble & Squeak')).toBeInTheDocument();
   });
   it('click and save de ingrendients', async () => {
     renderWithRouter(<App />, { route: '/meals/52885/in-progress' });
-    await delay(3000);
+    await delay();
     const ingrendients = screen.getByTestId('0-ingredient-step');
     expect(ingrendients).toBeInTheDocument();
     const checkbox = screen.getAllByRole('checkbox');
