@@ -18,6 +18,7 @@ export type RecipeType = {
   doneDate: string;
   src: string;
   image: string;
+  tags: string[];
 };
 
 export type SearchResultsType = {

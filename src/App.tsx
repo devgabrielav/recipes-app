@@ -4,7 +4,7 @@ import LayoutProvider from './context/layout/LayoutProvider';
 import Login from './components/Login/Login';
 import Home from './pages/Home';
 import RecipeDetails from './pages/RecipeDetails';
-import InProgress from './pages/InProgress';
+import InProgress from './components/RecipeInProgress';
 import DoneRecipes from './components/DoneRecipes';
 import Profile from './pages/Profile';
 import FavoriteRecipes from './components/FavoriteRecipes';
