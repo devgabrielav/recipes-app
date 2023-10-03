@@ -1,6 +1,6 @@
 import { Box, Button, Card, Center, Text } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import RecipeLayout from '../components/RecipeLayout';
+import RecipeLayout from './RecipeLayout';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
 import useSaveInProgressRecipe from '../hooks/useSaveInProgressRecipe';
