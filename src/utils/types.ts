@@ -3,6 +3,7 @@ export type LayoutType = {
 };
 
 export type RecipeType = {
+  tags?: string[];
   idMeal?: string;
   idDrink?: string;
   strMeal?: string;
