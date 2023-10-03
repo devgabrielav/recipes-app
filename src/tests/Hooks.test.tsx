@@ -6,29 +6,27 @@ import { renderWithRouter } from '../helper/renderWithRouter';
 import App from '../App';
 import useSaveInProgressRecipe from '../hooks/useSaveInProgressRecipe';
 import RecipeDetails from '../pages/RecipeDetails';
-import DoneRecipes from '../components/DoneRecipes';
-import InProgress from '../pages/InProgress';
 
-const delay = (milliseconds : number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const delay = () => new Promise((resolve) => setTimeout(resolve, 2000));
 describe('useRecipesDetails', async () => {
   it('throw error case id route is not found', async () => {
     expect(() => renderWithRouter(<RecipeDetails />, { route: '/meals/52885' })).toThrow('ID not found!');
   });
   it('useRecipeDetails return the expected values in incorrect route', async () => {
     renderWithRouter(<App />, { route: '/meals/abcde' });
-    await delay(3000);
+    await delay();
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('useRecipeDetails return the expected values in  "/meals/52771"', async () => {
     renderWithRouter(<App />, { route: '/meals/52771' });
-    await delay(3000);
+    await delay();
     expect(screen.getByText('Spicy Arrabiata Penne')).toBeInTheDocument();
   });
 
   it('useRecipeDetails return the expected values in  "/drinks/17141"', async () => {
     renderWithRouter(<App />, { route: '/drinks/17141' });
-    await delay(3000);
+    await delay();
     expect(screen.getByText('Smut')).toBeInTheDocument();
   });
 });
