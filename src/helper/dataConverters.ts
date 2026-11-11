@@ -49,3 +49,8 @@ export function getIngredientsAndMeasures(recipeDetails: ProductDetailsType | nu
   }, []);
   return { ingredients, measures };
 }
+
+/** "Pasta,Curry" -> ['Pasta', 'Curry'] (a API devolve null quando não há tags). */
+export function splitTags(tags: string | null | undefined): string[] {
+  return tags ? tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [];
+}

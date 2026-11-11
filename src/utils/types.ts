@@ -1,24 +1,21 @@
+export type RecipeKind = 'meals' | 'drinks';
+
 export type LayoutType = {
   searchResults: SearchResultsType;
+  /** Categoria ativa por tipo ('' = todas). */
+  category: Record<RecipeKind, string>;
+  /** Versão da API em que a lista foi carregada (evita recarregar ao voltar de uma receita). */
+  loadedAt: Record<RecipeKind, number | null>;
 };
 
+/** Resumo de receita devolvido por busca/filtro/lista da API. */
 export type RecipeType = {
-  tags?: string[];
   idMeal?: string;
   idDrink?: string;
   strMeal?: string;
   strDrink?: string;
   strMealThumb?: string;
   strDrinkThumb?: string;
-  nationality: string;
-  category: string;
-  type: string;
-  name: string;
-  alcoholicOrNot: string;
-  doneDate: string;
-  src: string;
-  image: string;
-  tags: string[];
 };
 
 export type SearchResultsType = {
@@ -43,15 +40,15 @@ type DetailsCommonKeys = {
 export type MealsDetailsType = {
   idMeal: string;
   strMeal: string;
-  strDrinkAlternate: null | string;
+  strDrinkAlternate?: null | string;
   strMealThumb: string;
 } & DetailsCommonKeys;
 
 export type DrinksDetailsType = {
   idDrink: string;
   strDrink: string;
-  strDrinkAlternate: null | string;
-  strMealThumb: string;
+  strDrinkAlternate?: null | string;
+  strDrinkThumb: string;
   strAlcoholic: string;
 } & DetailsCommonKeys;
 
@@ -61,6 +58,11 @@ export type ProductDetailsType = {
   img: string;
 } & DetailsCommonKeys;
 
+export type Featured = {
+  kind: RecipeKind;
+  recipe: ProductDetailsType;
+};
+
 export type FavoriteRecipeType = {
   id: string
   type: string,
@@ -69,6 +71,22 @@ export type FavoriteRecipeType = {
   alcoholicOrNot: string,
   name: string,
   image: string
+};
+
+export type DoneRecipeType = FavoriteRecipeType & {
+  doneDate: string;
+  tags: string[];
+};
+
+/** { meals: { [id]: ingredientesMarcados[] }, drinks: { ... } } */
+export type InProgressStore = Record<RecipeKind, Record<string, string[]>>;
+
+/** Dados mínimos para exibir um card em "Em andamento" sem chamar a API. */
+export type InProgressMeta = {
+  name: string;
+  image: string;
+  category: string;
+  total: number;
 };
 
 export type LayoutContextType = [

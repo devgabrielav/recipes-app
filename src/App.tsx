@@ -1,28 +1,33 @@
-import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import LayoutProvider from './context/layout/LayoutProvider';
-import Login from './components/Login/Login';
-import Home from './pages/Home';
+import ScrollToTop from './components/Layout/ScrollToTop';
+import Landing from './pages/Landing';
+import Explore from './pages/Explore';
 import RecipeDetails from './pages/RecipeDetails';
-import InProgress from './components/RecipeInProgress';
-import DoneRecipes from './components/DoneRecipes';
+import InProgress from './pages/RecipeInProgress';
+import InProgressRecipes from './pages/InProgressRecipes';
+import DoneRecipes from './pages/DoneRecipes';
+import FavoriteRecipes from './pages/FavoriteRecipes';
 import Profile from './pages/Profile';
-import FavoriteRecipes from './components/FavoriteRecipes';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
     <LayoutProvider>
+      <ScrollToTop />
       <Routes>
-        <Route path="/" element={ <Login /> } />
-        <Route path="/meals" element={ <Home /> } />
-        <Route path="/drinks" element={ <Home /> } />
-        <Route path="/profile" element={ <Profile /> } />
-        <Route path="/favorite-recipes" element={ <FavoriteRecipes /> } />
+        <Route path="/" element={ <Landing /> } />
+        <Route path="/meals" element={ <Explore /> } />
+        <Route path="/drinks" element={ <Explore /> } />
         <Route path="/meals/:id" element={ <RecipeDetails /> } />
         <Route path="/drinks/:id" element={ <RecipeDetails /> } />
         <Route path="/meals/:id/in-progress" element={ <InProgress /> } />
         <Route path="/drinks/:id/in-progress" element={ <InProgress /> } />
+        <Route path="/in-progress" element={ <InProgressRecipes /> } />
+        <Route path="/favorite-recipes" element={ <FavoriteRecipes /> } />
         <Route path="/done-recipes" element={ <DoneRecipes /> } />
+        <Route path="/profile" element={ <Profile /> } />
+        <Route path="*" element={ <NotFound /> } />
       </Routes>
     </LayoutProvider>
   );

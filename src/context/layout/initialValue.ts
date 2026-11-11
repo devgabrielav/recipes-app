@@ -5,4 +5,6 @@ export default {
     meals: [],
     drinks: [],
   },
+  category: { meals: '', drinks: '' },
+  loadedAt: { meals: null, drinks: null },
 } as LayoutType;

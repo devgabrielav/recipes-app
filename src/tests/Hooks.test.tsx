@@ -1,58 +1,48 @@
-import { screen } from '@testing-library/dom';
-import { renderHook } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
 import { vi } from 'vitest';
-import { renderWithRouter } from '../helper/renderWithRouter';
-import App from '../App';
+import { act, renderHook } from '@testing-library/react';
 import useSaveInProgressRecipe from '../hooks/useSaveInProgressRecipe';
 import RecipeDetails from '../pages/RecipeDetails';
+import { renderWithRouter } from '../helper/renderWithRouter';
+import { getInProgress } from '../helper/storage';
 
-const delay = () => new Promise((resolve) => { setTimeout(resolve, 2000); });
-describe('useRecipesDetails', async () => {
-  it('throw error case id route is not found', async () => {
-    expect(() => renderWithRouter(<RecipeDetails />, { route: '/meals/52885' })).toThrow('ID not found!');
-  });
-  it('useRecipeDetails return the expected values in incorrect route', async () => {
-    renderWithRouter(<App />, { route: '/meals/abcde' });
-    await delay();
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
-
-  it('useRecipeDetails return the expected values in  "/meals/52771"', async () => {
-    renderWithRouter(<App />, { route: '/meals/52771' });
-    await delay();
-    expect(screen.getByText('Spicy Arrabiata Penne')).toBeInTheDocument();
-  });
-
-  it('useRecipeDetails return the expected values in  "/drinks/17141"', async () => {
-    renderWithRouter(<App />, { route: '/drinks/17141' });
-    await delay();
-    expect(screen.getByText('Smut')).toBeInTheDocument();
+describe('useRecipesDetails', () => {
+  it('lança erro quando a rota não tem id', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => renderWithRouter(<RecipeDetails />, { route: '/meals/52885' }))
+      .toThrow('ID not found!');
   });
 });
 
 describe('useSaveInProgressRecipe', () => {
-  it('hook call setItem and getItem with correct values', async () => {
-    const { result } = renderHook(() => useSaveInProgressRecipe('52771'));
-    const { onChange } = result.current;
-    global.localStorage = {
-      getItem: vi.fn().mockReturnValue('{}'),
-      setItem: vi.fn(),
-      length: 0,
-      clear: () => {},
-      removeItemts: () => {},
-      key: () => '',
-    };
-    act(() => {
-      onChange('fakeIngredient');
-    });
-    expect(result.current.checkeds.fakeIngredient).toBeTruthy();
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1);
-    expect(localStorage.setItem).toHaveBeenLastCalledWith('inProgressRecipes', JSON.stringify({ 52771: { fakeIngredient: true } }));
+  it('persiste os ingredientes marcados por tipo e id', () => {
+    const { result } = renderHook(() => useSaveInProgressRecipe('52771', 'meals'));
+    act(() => { result.current.onChange('garlic'); });
+
+    expect(result.current.checkeds.garlic).toBe(true);
+    expect(getInProgress().meals['52771']).toEqual(['garlic']);
+
+    act(() => { result.current.onChange('garlic'); });
+    expect(result.current.checkeds.garlic).toBe(false);
+    expect(getInProgress().meals['52771']).toEqual([]);
   });
-  it('case not id return correct object', () => {
+
+  it('comida e bebida com o mesmo id não se misturam', () => {
+    const meal = renderHook(() => useSaveInProgressRecipe('1', 'meals'));
+    const drink = renderHook(() => useSaveInProgressRecipe('1', 'drinks'));
+    act(() => { meal.result.current.onChange('a'); });
+    act(() => { drink.result.current.onChange('b'); });
+    expect(getInProgress()).toEqual({ meals: { 1: ['a'] }, drinks: { 1: ['b'] } });
+  });
+
+  it('sem id devolve objeto vazio e não grava nada', () => {
     const { result } = renderHook(() => useSaveInProgressRecipe(''));
     expect(result.current.checkeds).toEqual({});
-    expect(typeof result.current.onChange === 'function').toBeTruthy();
+    act(() => { result.current.onChange('x'); });
+    expect(localStorage.getItem('inProgressRecipes')).toBeNull();
+  });
+
+  it('lê o formato antigo/corrompido sem quebrar', () => {
+    localStorage.setItem('inProgressRecipes', JSON.stringify({ meals: { 5: 'lixo' }, drinks: null }));
+    expect(getInProgress()).toEqual({ meals: {}, drinks: {} });
   });
 });

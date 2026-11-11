@@ -1,62 +1,59 @@
-import { screen } from '@testing-library/dom';
+import { screen } from '@testing-library/react';
 import { renderWithRouter } from '../helper/renderWithRouter';
 import Login from '../components/Login/Login';
+import { mockApiDown } from './fixtures';
 
-const testEmail = 'teste@teste.com';
-const testPassword = '1234567';
-const emailTestId = 'email-input';
-const passwordTestId = 'password-input';
-const buttonTestId = 'login-submit-btn';
+const email = 'teste@teste.com';
 
-describe('Testa tela de login', () => {
-  it('Elementos estão na tela', () => {
+describe('Login (somente e-mail, sem senha)', () => {
+  beforeEach(() => { mockApiDown(); });
+
+  it('não exige senha', () => {
     renderWithRouter(<Login />);
-
-    expect(screen.getByTestId(emailTestId)).toBeInTheDocument();
-    expect(screen.getByTestId(passwordTestId)).toBeInTheDocument();
-    expect(screen.getByTestId(buttonTestId)).toBeInTheDocument();
-  });
-  it('É possível digitar nos inputs e seus valores são alterados', async () => {
-    const { user } = renderWithRouter(<Login />);
-
-    const inputEmail = screen.getByTestId(emailTestId);
-    const inputPassword = screen.getByTestId(passwordTestId);
-
-    await user.type(inputEmail, testEmail);
-    await user.type(inputPassword, testPassword);
-
-    expect(inputEmail).toHaveValue(testEmail);
-    expect(inputPassword).toHaveValue(testPassword);
+    expect(screen.getByTestId('email-input')).toBeInTheDocument();
+    expect(screen.queryByTestId('password-input')).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/password|senha/i)).not.toBeInTheDocument();
   });
 
-  it('Testa se botão é habilitado se email e senha estão corretos, e se desabilita da forma correta', async () => {
+  it('habilita o botão só com e-mail válido', async () => {
     const { user } = renderWithRouter(<Login />);
+    const button = screen.getByTestId('login-submit-btn');
+    expect(button).toBeDisabled();
 
-    const inputEmail = screen.getByTestId(emailTestId);
-    const inputPassword = screen.getByTestId(passwordTestId);
-    const buttonEnter = screen.getByTestId(buttonTestId);
+    await user.type(screen.getByTestId('email-input'), 'invalido');
+    expect(button).toBeDisabled();
 
-    expect(buttonEnter).toBeDisabled();
-
-    await user.type(inputEmail, testEmail);
-    await user.type(inputPassword, testPassword);
-
-    expect(buttonEnter).not.toBeDisabled();
+    await user.clear(screen.getByTestId('email-input'));
+    await user.type(screen.getByTestId('email-input'), email);
+    expect(button).toBeEnabled();
   });
 
-  it('Testa se email é salvo no localStorage', async () => {
+  it('mostra erro de e-mail inválido ao sair do campo', async () => {
     const { user } = renderWithRouter(<Login />);
+    await user.type(screen.getByTestId('email-input'), 'abc');
+    await user.tab();
+    expect(screen.getByText('Enter a valid email')).toBeInTheDocument();
+  });
 
-    const inputEmail = screen.getByTestId(emailTestId);
-    const inputPassword = screen.getByTestId(passwordTestId);
-    const buttonEnter = screen.getByTestId(buttonTestId);
+  it('salva o e-mail no localStorage e vai para /meals', async () => {
+    const { user } = renderWithRouter(<Login />);
+    await user.type(screen.getByTestId('email-input'), email);
+    await user.click(screen.getByTestId('login-submit-btn'));
 
-    await user.type(inputEmail, testEmail);
-    await user.type(inputPassword, testPassword);
-    await user.click(buttonEnter);
+    expect(JSON.parse(localStorage.getItem('user') || '{}')).toEqual({ email });
+    expect(window.location.pathname).toBe('/meals');
+  });
 
-    const emailLocal = { email: testEmail };
+  it('Enter no campo envia o formulário', async () => {
+    const { user } = renderWithRouter(<Login />);
+    await user.type(screen.getByTestId('email-input'), `${email}{Enter}`);
+    expect(window.location.pathname).toBe('/meals');
+  });
 
-    expect(JSON.parse(localStorage.getItem('user') || '{}')).toEqual(emailLocal);
+  it('permite explorar como visitante sem salvar nada', async () => {
+    const { user } = renderWithRouter(<Login />);
+    await user.click(screen.getByTestId('guest-btn'));
+    expect(window.location.pathname).toBe('/meals');
+    expect(localStorage.getItem('user')).toBeNull();
   });
 });

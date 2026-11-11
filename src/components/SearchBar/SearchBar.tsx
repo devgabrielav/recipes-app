@@ -1,129 +1,112 @@
-import { FormEvent, useState, useContext } from 'react';
+import { FormEvent, useContext, useState } from 'react';
 import {
-  Input, Radio, Button, Flex, Container, RadioGroup,
+  Box, Button, Flex, FormControl, FormErrorMessage, Input, InputGroup, InputLeftElement, Radio,
+  RadioGroup,
 } from '@chakra-ui/react';
+import { FiSearch } from 'react-icons/fi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { searchMealsAPI, searchCocktailsAPI } from '../../helper/helpersAPI';
-import { RecipeType } from '../../utils/types';
+import { searchCocktailsAPI, searchMealsAPI, kindFromPath } from '../../helper/helpersAPI';
+import { useApiStatus } from '../../helper/apiStatus';
 import { layoutContext } from '../../context/layout/layoutContext';
+import { useI18n } from '../../i18n/I18nProvider';
+import { RecipeKind } from '../../utils/types';
 
-export default function SearchBar() {
+export default function SearchBar({ onDone }: { onDone?: () => void }) {
   const [searchOption, setSearchOption] = useState('ingredient');
   const [searchInput, setSearchInput] = useState('');
-  const [layout, setLayout] = useContext(layoutContext);
+  const [error, setError] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [, setLayout] = useContext(layoutContext);
+  const { version } = useApiStatus();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  const updateSearchResults = (newValue: RecipeType[], key: string) => {
-    setLayout(
-      {
-        searchResults: {
-          ...layout.searchResults,
-          [key]: newValue,
-        },
-      },
-    );
-  };
+  const kind: RecipeKind = kindFromPath(pathname);
 
   const executeSearch = async (event: FormEvent) => {
     event.preventDefault();
-    if (searchOption === 'first-letter' && searchInput.length > 1) {
-      window.alert('Your search must have only 1 (one) character');
+    setError('');
+    if (searchOption === 'first-letter' && searchInput.length !== 1) {
+      setError(t('firstLetterError'));
       return;
     }
-    if (pathname === '/meals') {
-      const dataMeals = await searchMealsAPI(searchOption, searchInput);
-      updateSearchResults(dataMeals, 'meals');
-      if (!dataMeals.length) {
-        window.alert("Sorry, we haven't found any recipes for these filters.");
-        return;
-      }
-      if (dataMeals.length === 1) {
-        navigate(`/meals/${dataMeals[0].idMeal}`);
-        return;
-      }
+    setSearching(true);
+    const results = await (kind === 'meals'
+      ? searchMealsAPI(searchOption, searchInput)
+      : searchCocktailsAPI(searchOption, searchInput));
+    setSearching(false);
+
+    setLayout((prev) => ({
+      ...prev,
+      searchResults: { ...prev.searchResults, [kind]: results },
+      loadedAt: { ...prev.loadedAt, [kind]: version },
+      category: { ...prev.category, [kind]: '' },
+    }));
+
+    if (results.length === 1) {
+      navigate(`/${kind}/${results[0].idMeal || results[0].idDrink}`);
+      return;
     }
-    if (pathname === '/drinks') {
-      const dataDrinks = await searchCocktailsAPI(searchOption, searchInput);
-      updateSearchResults(dataDrinks, 'drinks');
-      if (!dataDrinks.length) {
-        window.alert("Sorry, we haven't found any recipes for these filters.");
-        return;
-      }
-      if (dataDrinks.length === 1) {
-        navigate(`/drinks/${dataDrinks[0].idDrink}`);
-      }
-    }
+    onDone?.();
   };
 
   return (
-    <Container
-      maxW="360px"
-      padding={ 0 }
-      bg="#41197F"
-      color="white"
-      height={ 148 }
-      borderRadius={ 6 }
-      marginBottom={ 4 }
+    <Box
+      as="form"
+      onSubmit={ executeSearch }
+      role="search"
+      bg="white"
+      borderRadius="2xl"
+      boxShadow="card"
+      p={ { base: 3, md: 4 } }
     >
-      <form onSubmit={ executeSearch }>
-        <Input
-          data-testid="search-input"
-          placeholder="Search"
-          type="text"
-          bg="white"
-          marginBottom={ 4 }
-          name="searchValue"
-          color="black"
-          onChange={ (e) => setSearchInput(e.target.value) }
-        />
-        <Flex
-          justify="center"
-          align="center"
-          direction="column"
-          justifyContent="space-between"
-        >
-          <RadioGroup
-            onChange={ setSearchOption }
-            value={ searchOption }
-            name="search-type"
-            colorScheme="yellow"
-            display="flex"
-            justifyContent="space-between"
-            gap={ 5 }
-          >
-            <Radio
-              value="ingredient"
-              data-testid="ingredient-search-radio"
-            >
-              Ingredient
-            </Radio>
-            <Radio
-              value="name"
-              data-testid="name-search-radio"
-            >
-              Name
-            </Radio>
-            <Radio
-              value="first-letter"
-              data-testid="first-letter-search-radio"
-            >
-              First letter
-            </Radio>
-          </RadioGroup>
+      <Flex direction={ { base: 'column', md: 'row' } } gap={ 3 } align={ { md: 'center' } }>
+        <FormControl isInvalid={ Boolean(error) } flex={ 1 }>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none" color="ink.300">
+              <FiSearch />
+            </InputLeftElement>
+            <Input
+              data-testid="search-input"
+              placeholder={ t('searchPlaceholder') }
+              aria-label={ t('searchPlaceholder') }
+              type="text"
+              name="searchValue"
+              value={ searchInput }
+              onChange={ (e) => setSearchInput(e.target.value) }
+              bg="cream.50"
+            />
+          </InputGroup>
+          <FormErrorMessage data-testid="search-error">{error}</FormErrorMessage>
+        </FormControl>
 
-          <Button
-            mt={ 4 }
-            colorScheme="yellow"
-            w={ 300 }
-            color="white"
-            data-testid="exec-search-btn"
-            type="submit"
-          >
-            SEARCH
-          </Button>
-        </Flex>
-      </form>
-    </Container>
+        <RadioGroup
+          onChange={ setSearchOption }
+          value={ searchOption }
+          name="search-type"
+          colorScheme="brand"
+        >
+          <Flex gap={ 4 } wrap="wrap">
+            <Radio value="ingredient" data-testid="ingredient-search-radio">
+              {t('byIngredient')}
+            </Radio>
+            <Radio value="name" data-testid="name-search-radio">{t('byName')}</Radio>
+            <Radio value="first-letter" data-testid="first-letter-search-radio">
+              {t('byFirstLetter')}
+            </Radio>
+          </Flex>
+        </RadioGroup>
+
+        <Button
+          type="submit"
+          data-testid="exec-search-btn"
+          isLoading={ searching }
+          loadingText={ t('searching') }
+          px={ 8 }
+        >
+          {t('searchButton')}
+        </Button>
+      </Flex>
+    </Box>
   );
 }

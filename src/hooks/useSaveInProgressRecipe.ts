@@ -1,36 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { getCheckedIngredients, setCheckedIngredients } from '../helper/storage';
+import { RecipeKind } from '../utils/types';
 
-type CheckedsType = {
-  [ingredient: string]: boolean;
-};
-const loadByid = (id: string) => {
-  const inProgress = JSON.parse(localStorage
-    .getItem('inProgressRecipes') || '{}');
+type CheckedsType = Record<string, boolean>;
 
-  return inProgress[id] ? inProgress[id] : {} as CheckedsType;
-};
+const toMap = (list: string[]): CheckedsType => list
+  .reduce<CheckedsType>((acc, ingredient) => ({ ...acc, [ingredient]: true }), {});
 
-const save = (id: string, checkeds: CheckedsType) => {
-  const inProgress = JSON.parse(localStorage
-    .getItem('inProgressRecipes') || '{}');
-  localStorage.setItem('inProgressRecipes', JSON.stringify(
-    {
-      ...inProgress,
-      [id]: checkeds,
-    },
-  ));
-};
-function useSaveInProgressRecipe(id = '') {
-  const [checkeds, setCheckeds] = useState<CheckedsType>(loadByid(id || ''));
-  useEffect(() => {
-    setCheckeds(loadByid(id));
-  }, [id]);
+const load = (kind: RecipeKind, id: string) => (id ? toMap(getCheckedIngredients(kind, id)) : {});
+
+/** Ingredientes marcados de uma receita em andamento, persistidos no localStorage. */
+function useSaveInProgressRecipe(id = '', kind: RecipeKind = 'meals') {
+  const key = `${kind}:${id}`;
+  const [state, setState] = useState(() => ({ key, map: load(kind, id) }));
+  // Quando o id muda (a receita terminou de carregar), lê do storage na mesma renderização:
+  // evita um frame com os ingredientes desmarcados.
+  const checkeds = state.key === key ? state.map : load(kind, id);
 
   const onChange = (ingredient: string) => {
-    const newCheckeds = { ...checkeds, [ingredient]: !checkeds[ingredient] };
-
-    setCheckeds(newCheckeds);
-    save(id, newCheckeds);
+    const next = { ...checkeds, [ingredient]: !checkeds[ingredient] };
+    setState({ key, map: next });
+    if (id) {
+      setCheckedIngredients(kind, id, Object.keys(next).filter((name) => next[name]));
+    }
   };
   return { checkeds, onChange };
 }

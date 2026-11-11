@@ -1,0 +1,76 @@
+import { Lang } from './translations';
+
+/** Tradução de valores que a API devolve sempre em inglês. */
+const categories: Record<string, string> = {
+  Beef: 'Carne bovina',
+  Breakfast: 'Café da manhã',
+  Chicken: 'Frango',
+  Dessert: 'Sobremesa',
+  Goat: 'Cabrito',
+  Lamb: 'Cordeiro',
+  Miscellaneous: 'Variados',
+  Pasta: 'Massas',
+  Pork: 'Porco',
+  Seafood: 'Frutos do mar',
+  Side: 'Acompanhamento',
+  Starter: 'Entrada',
+  Vegan: 'Vegano',
+  Vegetarian: 'Vegetariano',
+  'Ordinary Drink': 'Drink comum',
+  Cocktail: 'Coquetel',
+  Shake: 'Milkshake',
+  'Other / Unknown': 'Outros',
+  Cocoa: 'Cacau',
+  Shot: 'Dose (shot)',
+  'Coffee / Tea': 'Café / Chá',
+  'Homemade Liqueur': 'Licor caseiro',
+  'Punch / Party Drink': 'Ponche / Drink de festa',
+  Beer: 'Cerveja',
+  'Soft Drink': 'Refrigerante',
+  Alcoholic: 'Alcoólico',
+  'Non alcoholic': 'Não alcoólico',
+  'Optional alcohol': 'Álcool opcional',
+};
+
+const areas: Record<string, string> = {
+  American: 'Americana',
+  Brazilian: 'Brasileira',
+  British: 'Britânica',
+  Canadian: 'Canadense',
+  Chinese: 'Chinesa',
+  Croatian: 'Croata',
+  Dutch: 'Holandesa',
+  Egyptian: 'Egípcia',
+  Filipino: 'Filipina',
+  French: 'Francesa',
+  Greek: 'Grega',
+  Indian: 'Indiana',
+  Irish: 'Irlandesa',
+  Italian: 'Italiana',
+  Jamaican: 'Jamaicana',
+  Japanese: 'Japonesa',
+  Kenyan: 'Queniana',
+  Malaysian: 'Malaia',
+  Mexican: 'Mexicana',
+  Moroccan: 'Marroquina',
+  Norwegian: 'Norueguesa',
+  Polish: 'Polonesa',
+  Portuguese: 'Portuguesa',
+  Russian: 'Russa',
+  Slovakian: 'Eslovaca',
+  Spanish: 'Espanhola',
+  Thai: 'Tailandesa',
+  Tunisian: 'Tunisiana',
+  Turkish: 'Turca',
+  Ukrainian: 'Ucraniana',
+  Uruguayan: 'Uruguaia',
+  Venezulan: 'Venezuelana',
+  Vietnamese: 'Vietnamita',
+  Unknown: 'Desconhecida',
+};
+
+export const translateCategory = (value: string, lang: Lang) => (
+  lang === 'pt' ? categories[value] ?? value : value);
+
+export const translateArea = (value: string, lang: Lang) => (
+  lang === 'pt' ? areas[value] ?? value : value);

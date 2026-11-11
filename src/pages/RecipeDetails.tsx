@@ -1,157 +1,108 @@
-import { Center, Heading, UnorderedList, ListItem, Card,
-  Container, SimpleGrid, Button,
-  Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  AspectRatio, Box, Button, Card, Flex, Grid, Heading, ListItem, Text, UnorderedList,
+} from '@chakra-ui/react';
+import { FiPlay } from 'react-icons/fi';
 import useRecipesDetails from '../hooks/useRecipesDetails';
 import { getIngredientsAndMeasures } from '../helper/dataConverters';
-import { saveToStartRecipe } from '../helper/useLocalStorage';
-import RecipeCard from '../components/RecipeCard';
-import RecipeLayout from '../components/RecipeLayout';
+import { isInProgress, startRecipe } from '../helper/storage';
+import { kindFromPath } from '../helper/helpersAPI';
+import Page from '../components/Layout/Page';
+import ActionBar from '../components/Layout/ActionBar';
+import RecipeHero from '../components/RecipeHero';
+import RecipeStatus from '../components/RecipeStatus';
+import Recommendations from '../components/Recommendations';
+import { useI18n } from '../i18n/I18nProvider';
 
 export default function RecipeDetails() {
-  const { recipeDetails, recommendations } = useRecipesDetails();
-  const [sliceValue, setSliceValue] = useState(0);
+  const { recipeDetails, recommendations, status } = useRecipesDetails();
   const { pathname } = useLocation();
-  const [inProgressRecipe, setInProgressRecipe] = useState(false);
-
   const navigate = useNavigate();
+  const { t, lang } = useI18n();
+  const kind = kindFromPath(pathname);
+  const [started, setStarted] = useState<string | null>(null);
 
-  useEffect(() => {
-    const test = setInterval(() => {
-      setSliceValue((prev) => {
-        return (prev === 4 ? 0 : prev + 2);
-      });
-    }, 2000);
-    return () => {
-      clearInterval(test);
-    };
-  }, [setSliceValue, sliceValue]);
-
-  useEffect(() => {
-    const inProgress = JSON.parse(localStorage.getItem('inProgressRecipes') || '{}');
-    const matchIdDrink = Object.keys(inProgress.drinks || '')
-      .find((drinkId) => drinkId === recipeDetails?.id);
-    const matchIdMeal = Object.keys(inProgress.meals || '')
-      .find((mealId) => mealId === recipeDetails?.id);
-    if (matchIdDrink || matchIdMeal) {
-      setInProgressRecipe(true);
-    }
-  }, [recipeDetails?.id]);
-
-  if (!recipeDetails) return (<div>Loading...</div>);
+  if (!recipeDetails) return <Page><RecipeStatus status={ status } /></Page>;
 
   const { ingredients, measures } = getIngredientsAndMeasures(recipeDetails);
+  const inProgress = started === recipeDetails.id || isInProgress(kind, recipeDetails.id);
 
-  const startRecipe = () => {
-    saveToStartRecipe(recipeDetails, ingredients, pathname);
-    setInProgressRecipe(true);
-    navigate(`${pathname}/in-progress`);
+  const start = () => {
+    startRecipe(kind, recipeDetails.id, {
+      name: recipeDetails.str,
+      image: recipeDetails.img,
+      category: recipeDetails.strCategory || '',
+      total: ingredients.length,
+    });
+    setStarted(recipeDetails.id);
+    navigate(`/${kind}/${recipeDetails.id}/in-progress`);
   };
 
   return (
-    <>
-      <Container
-        maxW="360px"
-        maxH="640px"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-      >
-        <RecipeLayout>
-          <Center>
-            <Heading>Ingredients</Heading>
-          </Center>
-          <Card
-            padding={ 4 }
-            width="100%"
-            maxW="360px"
-            maxH="640px"
-          >
-            <UnorderedList>
+    <Page bare withActionBar>
+      <Box maxW="1200px" mx="auto" px={ { base: 4, md: 6 } } pt={ { base: 5, md: 8 } }>
+        <RecipeHero recipe={ recipeDetails } kind={ kind } />
+
+        <Grid templateColumns={ { base: '1fr', lg: '5fr 7fr' } } gap={ 6 } alignItems="start">
+          <Card p={ { base: 5, md: 6 } } borderRadius="2xl" boxShadow="card">
+            <Heading as="h2" size="md" mb={ 3 }>{t('ingredients')}</Heading>
+            <UnorderedList spacing={ 2 } ml={ 5 }>
               {ingredients.map((ingredient, index) => (
-                <ListItem key={ ingredient }>
-                  <Text
-                    display="inline-block"
-                    data-testid={ `${index}-ingredient-name-and-measure` }
-                    marginInline={ 2 }
-                  >
-                    {ingredient}
-                  </Text>
-                  <Text
-                    display="inline-block"
-                    data-testid={ `${index}-ingredient-name-and-measure` }
-                  >
-                    {measures[index]}
-                  </Text>
+                <ListItem key={ `${ingredient}-${index}` }>
+                  <Flex justify="space-between" gap={ 3 }>
+                    <Text as="span" data-testid={ `${index}-ingredient-name-and-measure` }>
+                      {ingredient}
+                    </Text>
+                    <Text as="span" color="ink.300" textAlign="right">{measures[index]}</Text>
+                  </Flex>
                 </ListItem>
               ))}
             </UnorderedList>
           </Card>
-        </RecipeLayout>
+
+          <Card p={ { base: 5, md: 6 } } borderRadius="2xl" boxShadow="card">
+            <Heading as="h2" size="md" mb={ 3 }>{t('instructions')}</Heading>
+            <Text data-testid="instructions" whiteSpace="pre-line" lineHeight="tall">
+              {recipeDetails.strInstructions}
+            </Text>
+            {lang === 'pt' && (
+              <Text mt={ 4 } fontSize="sm" color="ink.300" fontStyle="italic">
+                {t('instructionsNote')}
+              </Text>
+            )}
+          </Card>
+        </Grid>
+
         {recipeDetails.strYoutube && (
-          <>
-            <Heading>Video</Heading>
-            <Card>
-              <Center
-                maxW="360px"
-                maxH="640px"
-              >
-                <iframe
-                  title="video"
-                  width="352"
-                  height="198"
-                  src={ recipeDetails.strYoutube.replace('watch?v=', 'embed/') }
-                  data-testid="video"
-                />
-              </Center>
-            </Card>
-          </>
+          <Box mt={ 6 }>
+            <Heading as="h2" size="md" mb={ 3 }>{t('video')}</Heading>
+            <AspectRatio ratio={ 16 / 9 } maxW="760px" borderRadius="2xl" overflow="hidden">
+              <iframe
+                title={ t('video') }
+                src={ recipeDetails.strYoutube.replace('watch?v=', 'embed/') }
+                data-testid="video"
+                loading="lazy"
+                allowFullScreen
+              />
+            </AspectRatio>
+          </Box>
         )}
 
-        <Heading>Recommended</Heading>
-        <Card>
+        <Recommendations recipes={ recommendations } />
+      </Box>
 
-          <SimpleGrid columns={ 2 }>
-            {
-            recommendations.map((recommendation, index) => (
-              <Container
-                data-testid={ `${index}-recommendation-card` }
-                key={ recommendation.idDrink || recommendation.idMeal }
-                display={ ((index <= sliceValue + 1) && (index >= sliceValue))
-                  ? 'block' : 'none' }
-              >
-
-                <RecipeCard
-                  maxH={ 10 }
-                  maxW={ 10 }
-                  recipe={ recommendation }
-                  index={ index }
-                  baseHeadTestId="recommendation-title"
-                  margin={ 4 }
-                />
-              </Container>
-            ))
-        }
-          </SimpleGrid>
-        </Card>
-      </Container>
-      <Center margin={ 4 }>
+      <ActionBar>
         <Button
           data-testid="start-recipe-btn"
-          colorScheme="yellow"
-          color="white"
-          width="100%"
-          position="fixed"
-          bottom="0px"
-          borderRadius={ 0 }
-          onClick={ startRecipe }
-          maxW="360px"
-          maxH="640px"
+          size="lg"
+          w="100%"
+          leftIcon={ <FiPlay /> }
+          onClick={ start }
         >
-          {inProgressRecipe ? 'Continue Recipe' : 'Start Recipe'}
+          {inProgress ? t('continueRecipe') : t('startRecipe')}
         </Button>
-      </Center>
-    </>
+      </ActionBar>
+    </Page>
   );
 }

@@ -1,138 +1,122 @@
-import { DrinksDetailsType, MealsDetailsType, RecipeType } from '../utils/types';
+import { apiGet } from './http';
+import { reportFallback } from './apiStatus';
+import {
+  isOfflineId, offlineById, offlineByCategory, offlineCategories, offlineList,
+  offlineRandom, offlineSearch,
+} from './offlineData';
+import {
+  DrinksDetailsType, MealsDetailsType, RecipeKind, RecipeType,
+} from '../utils/types';
 
-const mealAPI = 'https://www.themealdb.com/api/json/v1/1';
-const cocktailAPI = 'https://www.thecocktaildb.com/api/json/v1/1';
-
-// função para buscar comidas por ingrediente, nome ou primeira letra
-async function searchMealsAPI(option: string, query: string) : Promise<RecipeType[]> {
-  let endpoint = '';
-
-  if (option === 'ingredient') {
-    endpoint = `${mealAPI}/filter.php?i=${query}`;
-  } else if (option === 'name') {
-    endpoint = `${mealAPI}/search.php?s=${query}`;
-  } else if (option === 'first-letter') {
-    endpoint = `${mealAPI}/search.php?f=${query}`;
-  }
-
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return data.meals ? data.meals : [];
-  } catch (error) {
-    console.error('Erro:', error);
-    return [];
-  }
-}
-
-async function searchCocktailsAPI(option: string, query: string) : Promise<RecipeType[]> {
-  let endpoint = '';
-
-  if (option === 'ingredient') {
-    endpoint = `${cocktailAPI}/filter.php?i=${query}`;
-  } else if (option === 'name') {
-    endpoint = `${cocktailAPI}/search.php?s=${query}`;
-  } else if (option === 'first-letter') {
-    endpoint = `${cocktailAPI}/search.php?f=${query}`;
-  }
-
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return data.drinks ? data.drinks : [];
-  } catch (error) {
-    console.error('Erro:', error);
-    return [];
-  }
-}
-
-async function getMealById(idMeal: string) : Promise<MealsDetailsType | null> {
-  const endpoint = `${mealAPI}/lookup.php?i=${idMeal}`;
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-
-    return data.meals[0] ? data.meals[0] : null;
-  } catch (error) {
-    console.error('Erro:', error);
-    return null;
-  }
-}
-async function getDrinkById(idDrink: string): Promise<DrinksDetailsType | null> {
-  const endpoint = `${cocktailAPI}/lookup.php?i=${idDrink}`;
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return data.drinks[0] ? data.drinks[0] : null;
-  } catch (error) {
-    console.error('Erro:', error);
-    return null;
-  }
-}
-async function getMealsRecommendations(): Promise<RecipeType[]> {
-  const endpoint = `${mealAPI}/search.php?s=`;
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return data.meals ? data.meals.slice(0, 6) : [];
-  } catch (error) {
-    console.error('Erro:', error);
-    return [];
-  }
-}
-
-async function getDrinksRecommendations(): Promise<RecipeType[]> {
-  const endpoint = `${cocktailAPI}/search.php?s=`;
-  try {
-    const response = await fetch(endpoint);
-    const data = await response.json();
-
-    return data.drinks ? data.drinks.slice(0, 6) : [];
-  } catch (error) {
-    console.error('Erro:', error);
-    return [];
-  }
-}
-const fetchByCategory = async (pathname: string, category: string) => {
-  try {
-    const endpoint = pathname === '/meals'
-      ? `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
-      : `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category}`;
-
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return (data[pathname.replace('/', '')].slice(0, 12));
-  } catch (error) {
-    console.error('Erro ao buscar receitas:', error);
-  }
+const BASE: Record<RecipeKind, string> = {
+  meals: 'https://www.themealdb.com/api/json/v1/1',
+  drinks: 'https://www.thecocktaildb.com/api/json/v1/1',
 };
 
-const fetchAllRecipes = async (pathname: string) => {
-  try {
-    const endpointAll = pathname === '/meals'
-      ? 'https://www.themealdb.com/api/json/v1/1/search.php?s='
-      : 'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=';
+type Payload = Record<string, unknown[] | null>;
 
-    const responseAll = await fetch(endpointAll);
-    const dataAll = await responseAll.json();
-    return (dataAll[pathname.replace('/', '')].slice(0, 12));
-  } catch (error) {
-    console.error('Erro ao buscar receitas:', error);
-  }
-};
-const fetchCategories = async (pathname: string) => {
-  try {
-    const endpoint = pathname === '/meals'
-      ? 'https://www.themealdb.com/api/json/v1/1/list.php?c=list'
-      : 'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list';
+export const kindFromPath = (pathname: string): RecipeKind => (
+  pathname.includes('meals') ? 'meals' : 'drinks');
 
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return (data[pathname.replace('/', '')].slice(0, 5));
-  } catch (error) {
-    console.error('Erro ao buscar categorias:', error);
-  }
+/** Pega a lista (`meals`/`drinks`) de uma resposta. `null` = API indisponível. */
+async function fetchList<T>(kind: RecipeKind, path: string, useFresh = true) {
+  const { data } = await apiGet<Payload>(`${BASE[kind]}/${path}`, { useFresh });
+  if (!data) return null;
+  const list = data[kind];
+  return (Array.isArray(list) ? list : []) as T[];
+}
+
+/* Sem rede e sem cache: usa as receitas de exemplo e avisa a interface. */
+function sample<T>(value: T): T {
+  reportFallback('sample');
+  return value;
+}
+
+const ALL_RECIPES_PATH = 'search.php?s=';
+
+/* ------------------------------- busca ------------------------------- */
+const searchPath = (option: string, query: string) => {
+  const q = encodeURIComponent(query.trim());
+  if (option === 'ingredient') return `filter.php?i=${q}`;
+  if (option === 'first-letter') return `search.php?f=${q}`;
+  return `search.php?s=${q}`;
 };
-export { searchMealsAPI, searchCocktailsAPI, getMealById, getDrinkById,
-  getMealsRecommendations, getDrinksRecommendations, fetchCategories,
-  fetchAllRecipes, fetchByCategory };
+
+async function searchRecipes(kind: RecipeKind, option: string, query: string) {
+  const list = await fetchList<RecipeType>(kind, searchPath(option, query));
+  return list ?? sample(offlineSearch(kind, option, query));
+}
+
+export const searchMealsAPI = (option: string, query: string) => (
+  searchRecipes('meals', option, query));
+export const searchCocktailsAPI = (option: string, query: string) => (
+  searchRecipes('drinks', option, query));
+
+/* ------------------------------ detalhes ------------------------------ */
+export type LookupResult<T> = { recipe: T | null; unavailable: boolean };
+
+/**
+ * Busca uma receita por id. `unavailable` = a API não respondeu e não há cópia salva
+ * (diferente de `recipe: null` com API ok, que significa "essa receita não existe").
+ */
+export async function lookupById<T extends MealsDetailsType | DrinksDetailsType>(
+  kind: RecipeKind,
+  id: string,
+): Promise<LookupResult<T>> {
+  if (isOfflineId(id)) {
+    return { recipe: offlineById(kind, id) as T | null, unavailable: false };
+  }
+  const list = await fetchList<T>(kind, `lookup.php?i=${encodeURIComponent(id)}`);
+  return list
+    ? { recipe: list[0] ?? null, unavailable: false }
+    : { recipe: null, unavailable: true };
+}
+
+export const getMealById = async (id: string) => (
+  (await lookupById<MealsDetailsType>('meals', id)).recipe);
+export const getDrinkById = async (id: string) => (
+  (await lookupById<DrinksDetailsType>('drinks', id)).recipe);
+
+/** Receita aleatória (landing). Nunca usa cache "fresco" para variar a cada visita. */
+export async function getRandomRecipe(kind: RecipeKind) {
+  const list = await fetchList<MealsDetailsType | DrinksDetailsType>(
+    kind,
+    'random.php',
+    false,
+  );
+  if (list?.[0]) return list[0];
+  return sample(offlineRandom(kind));
+}
+
+/* ------------------------ listas da tela inicial ------------------------ */
+export async function fetchAllRecipes(kind: RecipeKind): Promise<RecipeType[]> {
+  const list = await fetchList<RecipeType>(kind, ALL_RECIPES_PATH);
+  if (list && list.length > 0) return list.slice(0, 12);
+  return sample(offlineList(kind)).slice(0, 12);
+}
+
+export async function fetchByCategory(kind: RecipeKind, category: string) {
+  const list = await fetchList<RecipeType>(
+    kind,
+    `filter.php?c=${encodeURIComponent(category)}`,
+  );
+  if (list && list.length > 0) return list.slice(0, 12);
+  return sample(offlineByCategory(kind, category)).slice(0, 12);
+}
+
+export async function fetchCategories(kind: RecipeKind) {
+  const list = await fetchList<{ strCategory: string }>(kind, 'list.php?c=list');
+  return (list ?? sample(offlineCategories(kind))).slice(0, 8);
+}
+
+/* ---------------------------- recomendações ---------------------------- */
+/** Receitas do "outro tipo": comidas sugerem bebidas e vice-versa. */
+export async function getMealsRecommendations(): Promise<RecipeType[]> {
+  const list = await fetchList<RecipeType>('meals', ALL_RECIPES_PATH);
+  return (list ?? sample(offlineList('meals'))).slice(0, 6);
+}
+
+export async function getDrinksRecommendations(): Promise<RecipeType[]> {
+  const list = await fetchList<RecipeType>('drinks', ALL_RECIPES_PATH);
+  return (list ?? sample(offlineList('drinks'))).slice(0, 6);
+}

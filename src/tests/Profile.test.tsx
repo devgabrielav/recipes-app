@@ -1,67 +1,58 @@
-import { screen } from '@testing-library/dom';
+import { vi } from 'vitest';
+import { screen } from '@testing-library/react';
 import App from '../App';
 import { renderWithRouter } from '../helper/renderWithRouter';
+import { mockApiDown } from './fixtures';
 
-const testEmail = 'teste@teste.com';
-const testPassword = '1234567';
-const done = 'Done Recipes';
-const fav = 'Favorite Recipes';
+describe('Perfil', () => {
+  beforeEach(() => { mockApiDown(); });
 
-describe('Testa página do profile', () => {
-  it('Header tem o profile e não tem o botão de busca e Footer está na página', () => {
+  it('mostra o e-mail e as estatísticas', () => {
+    localStorage.setItem('user', JSON.stringify({ email: 'teste@teste.com' }));
+    localStorage.setItem('favoriteRecipes', JSON.stringify([{ id: '1', type: 'meal' }]));
     renderWithRouter(<App />, { route: '/profile' });
 
-    expect(screen.queryByRole('img', { name: 'Search Icon' })).not.toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Profile Icon' })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Drink' })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: 'Meals' })).toBeInTheDocument();
+    expect(screen.getByTestId('profile-email')).toHaveTextContent('teste@teste.com');
+    expect(screen.getByTestId('stat-favorites')).toHaveTextContent('1');
+    expect(screen.getByTestId('stat-done')).toHaveTextContent('0');
   });
 
-  it('Texto Profile está na página, e 3 botões estão na tela', () => {
+  it('visitante vê o botão de entrar em vez de sair', () => {
     renderWithRouter(<App />, { route: '/profile' });
-
-    expect(screen.getByRole('heading', { name: 'Profile' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: done })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: fav })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument();
+    expect(screen.getByTestId('profile-guest')).toBeInTheDocument();
+    expect(screen.queryByTestId('profile-logout-btn')).not.toBeInTheDocument();
+    expect(screen.getByTestId('profile-login-btn')).toBeInTheDocument();
   });
 
-  it('Testa se o email correto aparece na tela', async () => {
-    const { user } = renderWithRouter(<App />);
-
-    const emailInput = screen.getByPlaceholderText('Email');
-    const inputPassword = screen.getByPlaceholderText('Password');
-    const enterButton = screen.getByRole('button', { name: 'ENTER' });
-
-    await user.type(emailInput, testEmail);
-    await user.type(inputPassword, testPassword);
-    await user.click(enterButton);
-    await user.click(screen.getByRole('img', { name: 'Profile Icon' }));
-
-    expect(screen.getByText(testEmail)).toBeInTheDocument();
+  it('atalhos levam às listas', async () => {
+    const { user } = renderWithRouter(<App />, { route: '/profile' });
+    await user.click(screen.getByTestId('profile-done-btn'));
+    expect(window.location.pathname).toBe('/done-recipes');
   });
 
-  it('Testa se botão Done Recipes funciona', async () => {
+  it('sair remove o e-mail mas mantém favoritas e idioma', async () => {
+    localStorage.setItem('user', JSON.stringify({ email: 'teste@teste.com' }));
+    localStorage.setItem('favoriteRecipes', JSON.stringify([{ id: '1' }]));
+    localStorage.setItem('recipesApp:lang', JSON.stringify('en'));
     const { user } = renderWithRouter(<App />, { route: '/profile' });
 
-    await user.click(screen.getByRole('button', { name: done }));
+    await user.click(screen.getByTestId('profile-logout-btn'));
 
-    expect(screen.getByRole('heading', { name: done })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
+    expect(localStorage.getItem('user')).toBeNull();
+    expect(localStorage.getItem('favoriteRecipes')).not.toBeNull();
+    expect(localStorage.getItem('recipesApp:lang')).not.toBeNull();
   });
 
-  it('Testa se botão Favorite Recipes funciona', async () => {
-    const { user } = renderWithRouter(<App />, { route: '/profile' });
+  it('apagar dados limpa tudo, menos o idioma', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    localStorage.setItem('favoriteRecipes', JSON.stringify([{ id: '1' }]));
+    localStorage.setItem('recipesApp:lang', JSON.stringify('pt'));
+    const { user } = renderWithRouter(<App />, { route: '/profile', lang: 'en' });
 
-    await user.click(screen.getByRole('button', { name: fav }));
+    await user.click(screen.getByText('Erase all data on this device'));
 
-    expect(screen.getByRole('heading', { name: fav })).toBeInTheDocument();
-  });
-
-  it('Testa se botão Logout funciona', async () => {
-    const { user } = renderWithRouter(<App />, { route: '/profile' });
-
-    await user.click(screen.getByRole('button', { name: 'Logout' }));
-
-    expect(screen.getByRole('heading', { name: 'LOGIN' })).toBeInTheDocument();
+    expect(localStorage.getItem('favoriteRecipes')).toBeNull();
+    expect(localStorage.getItem('recipesApp:lang')).not.toBeNull();
   });
 });
