@@ -1,16 +1,16 @@
-# Recipes App
+# 🍽️ Recipes App
 
 A responsive recipe discovery and tracking app built to help users explore meals and drinks, save favorites, and follow recipes step by step from preparation to completion.
 
 Live demo: https://devgabrielav.github.io/recipes-app/
 
-## Project overview
+## 🔎 Project overview
 
 This application was created to make recipe discovery simple and practical. Users can browse a large collection of meals and drinks, filter by category or search by name or ingredient, review detailed instructions, and keep track of what they have already started or finished.
 
 The experience is designed for everyday cooking use, with persistence across sessions so favorites, progress, and completed recipes remain available in the browser.
 
-## Features
+## ✨ Features
 
 - Explore meals and drinks from public recipe APIs
 - Search by name, ingredient, or first letter
@@ -25,7 +25,7 @@ The experience is designed for everyday cooking use, with persistence across ses
 - Share recipes with a link
 - Fall back to cached or local sample data when the API is unavailable
 
-## Tech stack
+## 🧰 Tech stack
 
 ### Frontend
 - React
@@ -47,7 +47,7 @@ The experience is designed for everyday cooking use, with persistence across ses
 - Jest DOM
 - ESLint
 
-## Project structure
+## 📁 Project structure
 
 ```text
 src/
@@ -64,7 +64,7 @@ src/
 └── utils/
 ```
 
-## Getting started
+## 🚀 Getting started
 
 ### Prerequisites
 
@@ -89,10 +89,10 @@ Then open:
 http://localhost:3000
 ```
 
-## API resilience
+## 🛡️ API resilience
 
 The app includes fallback logic to keep the interface usable even when external recipe services are slow or unavailable. It uses timeout handling, retry attempts, cached responses, and local sample data to reduce failures and keep the user experience smooth.
 
-## Notes
+## 📝 Notes
 
 This project is a frontend application focused on usability, recipe browsing, and persistence. It is meant to be a practical example of a responsive recipe app with offline-friendly behavior and a clean user flow.
