@@ -93,6 +93,38 @@ http://localhost:3000
 
 The app includes fallback logic to keep the interface usable even when external recipe services are slow or unavailable. It uses timeout handling, retry attempts, cached responses, and local sample data to reduce failures and keep the user experience smooth.
 
+## 📸 Screenshots
+
+Desktop
+
+<p align="center">
+  <img src="assets/recipes-1.png" alt="Recipes app desktop home screen showing a recipe discovery interface" width="100%" />
+</p>
+<p align="center">
+  <img src="assets/recipes-2.png" alt="Recipes app interface with search and recipe cards" width="100%" />
+</p>
+
+Features
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="assets/recipes-3.png" alt="Recipe details page with ingredients and instructions" width="100%" />
+    </td>
+    <td align="center" width="50%">
+      <img src="assets/recipes-4.png" alt="Saved recipes, in progress, and done lists" width="100%" />
+    </td>
+  </tr>
+</table>
+<table>
+<td  align="center">
+  <img src="assets/recipes-5.png" alt="Recipes app favorites and recipe tracking screens" width="100%" />
+</td >
+<td  align="center">
+  <img src="assets/recipes-6.png" alt="Recipes app mobile friendly layout and recipe browsing flow" width="100%" />
+</td >
+</table>
+
 ## 📝 Notes
 
 This project is a frontend application focused on usability, recipe browsing, and persistence. It is meant to be a practical example of a responsive recipe app with offline-friendly behavior and a clean user flow.
